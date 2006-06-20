@@ -19,7 +19,7 @@
    \item{xlab}{character, label for x-position}
    \item{normalized.to}{numeric, a line(s) is drawn at this horizontal position}
    \item{grid}{numeric, a line(s) is drawn at this vertical position}
-   \item{smooth.lambda}{numeric, smoothing parameter see \code{arraysmooth}}
+   \item{smooth.lambda}{numeric, smoothing parameter see \code{quantsmooth}}
    \item{interval}{numeric (0..1), plotting of extra smoothed lines around median. With \code{interval} = 0.5 the 0.25 and 0.75 quartiles are plotted, with \code{interval} = 0.9 the 0.05 and 0.95 quantiles are plotted, }
    \item{plotnew}{logical, if TRUE a new plot is created, else the data are plotted into an existing plot}
    \item{cols}{color vector, colors for columns in \code{intensities} }
@@ -36,7 +36,7 @@
 \author{Jan Oosting}
 
 \seealso{
-  \code{\link{arraysmooth}}
+  \code{\link{quantsmooth}}
 }
 
 \examples{

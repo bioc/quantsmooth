@@ -4,7 +4,7 @@
 \title{arraysmooth Helper functions}
 
 \description{
-   arraysmooth Helper functions
+   quantsmooth Helper functions
 }
 
 \usage{

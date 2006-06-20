@@ -22,7 +22,7 @@
 }
 
 \details{
-  This function uses \code{arraysmooth} to detect regions in the genome that are abnormal.  
+  This function uses \code{quantsmooth} to detect regions in the genome that are abnormal.
   If \code{interval} is set then a smoothed line is calculated for \code{tau = 0.5 - interval/2}, and a region is determined as upregulated if this line is above the reference. Down regulation is determined when the smoothed line for \code{tau = 0.5 + interval/2} is below the reference value.
   If \code{threshold} is set then a smoothed line is calculated for \code{tau = 0.5} and up- or down regulation are determined when this line is outside the range \code{[normalized.t - threshold:normalized.to + threshold]}
 }

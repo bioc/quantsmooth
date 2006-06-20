@@ -15,7 +15,7 @@ plotChromosome(gendata, chrompos, chromosome, dataselection = NULL, ylim = NULL,
   \item{ylim}{limits for plot}
   \item{normalized.to}{y-value(s) for line}
   \item{grid}{x-value(s) for line}
-  \item{smooth.lambda}{smoothing parameter, see \code{\link{arraysmooth}}}
+  \item{smooth.lambda}{smoothing parameter, see \code{\link{quantsmooth}}}
   \item{interval}{position of extra lines besides median, see \code{\link{plotSmoothed}}}
   \item{\dots}{extra arguments for \code{\link{plotSmoothed}}}
 }
@@ -25,7 +25,7 @@ plotChromosome(gendata, chrompos, chromosome, dataselection = NULL, ylim = NULL,
   The function is used for its side effects
 }
 \author{ Jan Oosting }
-\seealso{ \code{\link{plotSmoothed}}, \code{\link{arraysmooth}} }
+\seealso{ \code{\link{plotSmoothed}}, \code{\link{quantsmooth}} }
 \examples{
 }
 \keyword{hplot}

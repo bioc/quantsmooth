@@ -13,8 +13,8 @@
 
 \arguments{
    \item{intensities}{numeric vector}
-   \item{lambdas}{numeric vector; see \code{\link{arraysmooth}}}
-   \item{\dots}{extra parameters for \code{arraysmooth.cv}; currently only \code{ridge.kappa}}
+   \item{lambdas}{numeric vector; see \code{\link{quantsmooth}}}
+   \item{\dots}{extra parameters for \code{quantsmooth.cv}; currently only \code{ridge.kappa}}
 }
 
 \details{
@@ -26,7 +26,7 @@
 \author{Jan Oosting}
 
 \seealso{
-  \code{\link{arraysmooth.cv}}
+  \code{\link{quantsmooth.cv}}
 }
 
 \examples{

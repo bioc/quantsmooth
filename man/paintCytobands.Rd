@@ -7,7 +7,9 @@
   Adapted from the paint.chromosome function in the lodplot package by David L Duffy 
 }
 \usage{
-paintCytobands(chrom, pos = c(0, 0), units = c("cM", "bases", "ISCN"), width = 0.4, length.out, bands = "major", orientation = c("H","V"), legend = TRUE, bleach = 0)
+paintCytobands(chrom, pos = c(0, 0), units = c("cM", "bases", "ISCN"), width = 0.4,
+            length.out, bands = "major", orientation = c("h","v"), legend = TRUE,
+            cex.leg = 0.7, bleach = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -20,6 +22,7 @@ paintCytobands(chrom, pos = c(0, 0), units = c("cM", "bases", "ISCN"), width = 0
   \item{orientation}{chromosome is plotted either \em{H}orizontally to the right of 
 	the starting point or \em{V}ertically down from the starting point}
   \item{legend}{logical, if \code{TRUE} then the bandnames are plotted next to the chromosome}
+  \item{cex.leg}{numeric, relative size of legend text}
   \item{bleach}{numeric [0,1], proportion by which to bleach the chromosome}
 }
 \details{

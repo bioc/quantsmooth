@@ -136,7 +136,7 @@ semicircle <- function(base.x, base.y, base.length, height=base.length, side=1, 
   )
 }
 #
-paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=0.4, length.out, bands="major", orientation=c("H","V"), legend = TRUE, cex.leg=0.7, bleach = 0) {
+paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=0.4, length.out, bands="major", orientation=c("h","v"), legend = TRUE, cex.leg=0.7, bleach = 0) {
   # Based on paint.chromosome from lodplot package
   # added:
   #  -bleach
@@ -178,7 +178,7 @@ paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=
   n<-nrow(chromdata)
   centromere<-which(chromdata$arm[-n]!=chromdata$arm[-1])
   idx<-c(2:(centromere-1), (centromere+2):(n-1))
-  if (orientation=="H") {
+  if (orientation=="h") {
     rect(pos[1]+bandpos[idx,1],pos[2],pos[1]+bandpos[idx,2],pos[2]-width, col=bandcol[idx], density=banddens[idx], border=bandbord[idx])
     semicircle(pos[1]+bandpos[1,2], pos[2]-width, width,
                bandpos[1,2]-bandpos[1,1], 2, col=bandcol[1], density=banddens[1], border=bandbord[1])
