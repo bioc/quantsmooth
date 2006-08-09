@@ -69,8 +69,8 @@ prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0
   	axis(4, c(1:length(dwidth)), characterCHR(rightrow), las = 2)
   	if (paintCytobands && organism=="hsa") {
     	for (i in 1:length(dwidth)) {
-    	  paintCytobands(i,c(0,i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[leftrow[i]],legend=FALSE,bleach=bleach)
-    	  if(rightrow[i]!="") paintCytobands(i,c(maxdwidth-lens[rightrow[i]],i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[rightrow[i]],legend=FALSE,bleach=bleach)
+    	  if (lens[leftrow[i]]>0) paintCytobands(i,c(0,i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[leftrow[i]],legend=FALSE,bleach=bleach)
+    	  if(rightrow[i]!="" && lens[rightrow[i]]>0) paintCytobands(i,c(maxdwidth-lens[rightrow[i]],i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[rightrow[i]],legend=FALSE,bleach=bleach)
   	  }
   	} else {
     	for (i in 1:length(dwidth)) {
@@ -81,12 +81,14 @@ prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0
     # for each locus determine postion on plot , this can be used later to fill with data
   	dchrompos<-matrix(0,nrow=nrow(chrompos),ncol=2,dimnames=list(rownames(chrompos),c("CHR","MapInfo")))
  		for (i in 1:length(rightrow)) if (rightrow[i]!="") {
-      dchrompos[chrompos[,"CHR"]==rightrow[i],2]<-chrompos[chrompos[,"CHR"]==rightrow[i],"MapInfo"]+maxdwidth-lens[rightrow[i]]
-      dchrompos[chrompos[,"CHR"]==rightrow[i],1]<- i
+ 		  probes<-numericCHR(chrompos[,"CHR"])==rightrow[i]
+      dchrompos[probes,2]<-chrompos[probes,"MapInfo"]+maxdwidth-lens[rightrow[i]]
+      dchrompos[probes,1]<- i
     }
   	for (i in 1:length(leftrow)) {
-      dchrompos[chrompos[,"CHR"]==leftrow[i],2]<-chrompos[chrompos[,"CHR"]==leftrow[i],"MapInfo"]
-      dchrompos[chrompos[,"CHR"]==leftrow[i],1]<- i
+ 		  probes<-numericCHR(chrompos[,"CHR"])==leftrow[i]
+			dchrompos[probes,2]<-chrompos[probes,"MapInfo"]
+      dchrompos[probes,1]<- i
     }
 	}
   else {
@@ -96,7 +98,7 @@ prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0
   	cols<-rep(cols,length.out=m)
     maxdwidth<-max(lens)
   	plot(c(0,maxdwidth),c(0.5,m+0.5+topspace),type="n",ylab="Chromosome",xlab="",axes = FALSE, las = 2,...)
-  	axis(2, c(m:1), names(lens), las = 2)
+  	axis(2, c(m:1), characterCHR(names(lens)), las = 2)
     for (i in 1:m)  lines(c(0,lens[i]),c(m+1-i,m+1-i),col=cols[as.numeric(names(lens))],lwd=2)
     dchrompos<-chrompos
     dchrompos[,1]<-m+1-as.numeric(chrs2)
