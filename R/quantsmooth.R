@@ -1,7 +1,7 @@
 #
 # quantsmooth.r
 # (c) J. Oosting 2006
-quantsmooth<-function(intensities, smooth.lambda=2, tau=0.5, ridge.kappa=0, smooth.na=TRUE) {
+.quantsmooth<-function(intensities, smooth.lambda=2, tau=0.5, ridge.kappa=0, smooth.na=TRUE) {
   m<-length(intensities)
   nas<-is.na(intensities)
   if (sum(nas)<m) {
@@ -16,7 +16,7 @@ quantsmooth<-function(intensities, smooth.lambda=2, tau=0.5, ridge.kappa=0, smoo
       B <- rbind(B, ridge.kappa * E)
       ystar <- c(ystar, rep(0, m))
     }
-    myrq = try(rq.fit(B, ystar, tau=tau, method = "fn"),FALSE)
+    myrq = try(rq.fit(B, ystar, tau=tau, method = "fn"),TRUE)
     if (class(myrq)!="try-error") {
       res<-myrq$coeff
       if (!smooth.na) res[nas]<-NA
@@ -37,16 +37,18 @@ quantsmooth<-function(intensities, smooth.lambda=2, tau=0.5, ridge.kappa=0, smoo
   }
 }
 
-quantsmooth.ol<-function(intensities, smooth.lambda=2, tau=0.5, ridge.kappa=0, smooth.na=TRUE, segment=100, step.size=50) {
+quantsmooth<-function(intensities, smooth.lambda=2, tau=0.5, ridge.kappa=0, smooth.na=TRUE, segment) {
   # hack to enable smoothing of long sequences
   m<-length(intensities)
+  if (missing(segment)) segment<-m
+  step.size<-segment %/% 2
   response<-vector(mode="numeric",length=m)
-  response[1:min(m,segment)]<-quantsmooth(intensities[1:min(m,segment)],smooth.lambda,tau,ridge.kappa,smooth.na)
+  response[1:min(m,segment)]<-.quantsmooth(intensities[1:min(m,segment)],smooth.lambda,tau,ridge.kappa,smooth.na)
   i.s<-1+step.size
   ol<-segment-step.size
   while ((i.s+step.size) < m) {
     i.e<-min(m,i.s+segment-1)
-    tmp.resp<-quantsmooth(intensities[i.s:i.e],smooth.lambda,tau,ridge.kappa,smooth.na)
+    tmp.resp<-.quantsmooth(intensities[i.s:i.e],smooth.lambda,tau,ridge.kappa,smooth.na)
     if (ol>0) {
       portion<-1:ol / (ol+1)
       response[i.s:(i.s+ol-1)] <- (response[i.s:(i.s+ol-1)]*(1-portion)) + (tmp.resp[1:ol] * portion)

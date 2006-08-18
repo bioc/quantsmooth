@@ -1,6 +1,5 @@
 \name{quantsmooth}
 \alias{quantsmooth}
-\alias{quantsmooth.ol}
 
 \title{quantsmooth}
 
@@ -9,8 +8,7 @@
 }
 
 \usage{
-  quantsmooth(intensities,smooth.lambda=2, tau=0.5, ridge.kappa=0,smooth.na=TRUE)
-  quantsmooth.ol(intensities,smooth.lambda=2, tau=0.5, ridge.kappa=0,smooth.na=TRUE,segment=100,step.size=50)
+  quantsmooth(intensities,smooth.lambda=2, tau=0.5, ridge.kappa=0,smooth.na=TRUE,segment)
 }
 
 \arguments{
@@ -20,7 +18,6 @@
    \item{ridge.kappa}{fudge parameter; see details}
    \item{smooth.na}{logical; handling of NA}
    \item{segment}{integer, length of overlapping segments}
-   \item{step.size}{integer, steplength between successive segments. Overlap = segment - step.size}
 }
 
 \details{

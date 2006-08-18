@@ -1,4 +1,4 @@
 
-export(quantsmooth, quantsmooth.ol, quantsmooth.cv, getLambdaMin, plotSmoothed, 
+export(quantsmooth, quantsmooth.cv, getLambdaMin, plotSmoothed,
        getChangedRegions, getChangedIdx, numericCHR, characterCHR, scaleto, plotChromosome,
        prepareGenomePlot, paintCytobands, lengthChromosome, drawSimpleChrom)
