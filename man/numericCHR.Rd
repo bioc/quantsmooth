@@ -22,5 +22,9 @@ characterCHR(CHR)
 }
 \author{ Jan Oosting }
 \examples{
+   chroms<-c("3","2","8","X","7","Y","5","1","9","10","11","12","4","6")
+   sort(chroms)
+   sort(numericCHR(chroms))
+   characterCHR(sort(numericCHR(chroms)))
 }
 \keyword{manip}

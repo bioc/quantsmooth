@@ -30,7 +30,10 @@
 }
 
 \examples{
-
+	data(chr14)
+	# A low value is indicative of a better fit to the data
+	quantsmooth.cv(bac.cn[,1],1)
+	quantsmooth.cv(bac.cn[,1],2.8)
 }
 \keyword{htest}
 \keyword{smooth}

@@ -30,6 +30,4 @@ prepareGenomePlot(chrompos, cols = "grey50", paintCytobands = FALSE, bleach = 0,
   A matrix with 2 columns that contain the Y and X positions for the probes on the plot
 }
 \author{Jan Oosting }
-\examples{
-}
 \keyword{hplot}

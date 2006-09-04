@@ -23,5 +23,7 @@ drawSimpleChrom(x, y, len = 3, width = 1, fill, col, orientation = c("h", "v"), 
 }
 \author{ Jan Oosting }
 \examples{
+  plot(c(0,4),c(0,3),type="n",xaxt="n",yaxt="n",xlab="",ylab="")
+  drawSimpleChrom(2,3,fill=c("p","q3"),col=c("red","blue"),orientation="v")
 }
 \keyword{aplot}

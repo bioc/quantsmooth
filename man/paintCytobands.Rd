@@ -11,7 +11,6 @@ paintCytobands(chrom, pos = c(0, 0), units = c("cM", "bases", "ISCN"), width = 0
             length.out, bands = "major", orientation = c("h","v"), legend = TRUE,
             cex.leg = 0.7, bleach = 0)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{chrom}{chromosomal id, chromosome to plot 1:22,X,Y}
   \item{pos}{numeric vector of length 2, position in the plot to start the plot}
@@ -30,10 +29,13 @@ paintCytobands(chrom, pos = c(0, 0), units = c("cM", "bases", "ISCN"), width = 0
 \value{
   This function is executed for its side effects
 }
-\references{ lodplot package, ~put references to the literature/web site here ~ }
+\references{ lodplot package }
 \author{ David L Duffy , Jan Oosting
 }
 \examples{
+  plot(c(0,lengthChromosome(14,"bases")),c(-2,2),type="n",xaxt="n",yaxt="n",xlab="",ylab="")
+  paintCytobands(14,units="bases")
+
 }
 \keyword{aplot}
 

@@ -15,8 +15,7 @@
 
 \author{Jan Oosting, Paul Eilers \& Renee Menezes}
 
-\date{Package \Rpackage{quantsmooth}, version
-\Sexpr{Biobase::package.version("quantsmooth")}.\\\ \\
+\date{Package \Rpackage{quantsmooth}.\\\ \\
 \today}
 
 \begin{document}
@@ -115,6 +114,14 @@ To identify genomic regions that contain losses or gains also these functions ca
 plotSmoothed(ill.cn[,1],ill.pos,ylim=c(1,2.5),normalized.to=2,smooth.lambda=length(ill.pos)/lambda.divisor)
 res<-getChangedRegions(ill.cn[,1],ill.pos,normalized.to=2,interval=0.5)
 segments(res[,"start"],1.0,res[,"end"],1.0,col=2,lwd=2)
+@
+
+\section{Session Information}
+
+The version number of R and packages loaded for generating the vignette were:
+
+<<echo=FALSE,results=tex>>=
+toLatex(sessionInfo())
 @
 
 \end{document}

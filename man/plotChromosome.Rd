@@ -26,6 +26,4 @@ plotChromosome(gendata, chrompos, chromosome, dataselection = NULL, ylim = NULL,
 }
 \author{ Jan Oosting }
 \seealso{ \code{\link{plotSmoothed}}, \code{\link{quantsmooth}} }
-\examples{
-}
 \keyword{hplot}

@@ -30,6 +30,7 @@
 \author{Jan Oosting}
 
 \examples{
-
+	data(chr14)
+	plot(quantsmooth(bac.cn[,1],smooth.lambda=2.8),type="l")
 }
 \keyword{smooth}

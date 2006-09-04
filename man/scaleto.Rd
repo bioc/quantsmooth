@@ -9,7 +9,6 @@
 \usage{
 scaleto(x, fromlimits = c(0, 50), tolimits = c(0.5, -0.5), adjust = TRUE)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{numeric}
   \item{fromlimits}{numeric vector with length 2, original range of data}
@@ -21,6 +20,4 @@ scaleto(x, fromlimits = c(0, 50), tolimits = c(0.5, -0.5), adjust = TRUE)
   numeric of same size as \code{x}
 }
 \author{ Jan Oosting }
-\examples{
-}
 \keyword{manip}

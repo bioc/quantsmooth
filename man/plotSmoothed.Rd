@@ -40,6 +40,7 @@
 }
 
 \examples{
-
+	 data(chr14)
+	 plotSmoothed(bac.cn,bac.pos,ylim=c(1,2.5),normalized.to=2,smooth.lambda=2.5)
 }
 \keyword{hplot}

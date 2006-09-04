@@ -30,6 +30,9 @@
 }
 
 \examples{
+  data(chr14)
+  lambdas<-2^seq(from=-2,to=5,by=0.25)
+  getLambdaMin(bac.cn[,1],lambdas)
 
 }
 \keyword{smooth}

@@ -16,6 +16,10 @@ lengthChromosome(chrom, units = c("cM", "bases", "ISCN"))
 }
 \author{Jan Oosting}
 \examples{
+  # Show length of chromosome 1 in several types of units
+  lengthChromosome(1,"cM")
+  lengthChromosome(1,"bases")
+  lengthChromosome(1,"ISCN")
 }
 \keyword{data}
 
