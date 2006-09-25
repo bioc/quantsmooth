@@ -5,7 +5,7 @@
   This function paints chromosomal icons on an existing plot
 }
 \usage{
-drawSimpleChrom(x, y, len = 3, width = 1, fill, col, orientation = c("h", "v"), centromere.size = 3 * width)
+drawSimpleChrom(x, y, len = 3, width = 1, fill, col, orientation = c("h", "v"), centromere.size = 0.6)
 }
 \arguments{
   \item{x}{start x-position}
@@ -16,7 +16,7 @@ drawSimpleChrom(x, y, len = 3, width = 1, fill, col, orientation = c("h", "v"), 
     "a"ll of the chromosome, the complete p or q-arm, or a subsegment of the arms}
   \item{col}{color(s) of \code{fill}}
   \item{orientation}{either "h"orizontal or "v"ertical}
-  \item{centromere.size}{The centromere is drawn with a point, and may need a size adjustment}
+  \item{centromere.size}{The size of the centromere as fraction of the width}
 }
 \value{
   This function is executed for its side effects

@@ -25,7 +25,7 @@
     else {
       if (ridge.kappa==0) {
         warning("Problem with fit, repeated with ridge.kappa=(0.001*smooth.lambda)")
-        quantsmooth(intensities,smooth.lambda=smooth.lambda,tau=tau,ridge.kappa=smooth.lambda*0.001)
+        .quantsmooth(intensities,smooth.lambda=smooth.lambda,tau=tau,ridge.kappa=smooth.lambda*0.001,smooth.na=smooth.na)
       }
       else {
         myrq  #Show error
@@ -38,7 +38,8 @@
 }
 
 quantsmooth<-function(intensities, smooth.lambda=2, tau=0.5, ridge.kappa=0, smooth.na=TRUE, segment) {
-  # hack to enable smoothing of long sequences
+  # if segment is set then the sequence is smoothed with overlapping segments
+  # The algorhithm has steeply increasing memory needs for longer sequences
   m<-length(intensities)
   if (missing(segment)) segment<-m
   step.size<-segment %/% 2
@@ -50,6 +51,7 @@ quantsmooth<-function(intensities, smooth.lambda=2, tau=0.5, ridge.kappa=0, smoo
     i.e<-min(m,i.s+segment-1)
     tmp.resp<-.quantsmooth(intensities[i.s:i.e],smooth.lambda,tau,ridge.kappa,smooth.na)
     if (ol>0) {
+      # set diagonal tapering on overlapping sequencing to prevent abrupt changes on start and end of overlap
       portion<-1:ol / (ol+1)
       response[i.s:(i.s+ol-1)] <- (response[i.s:(i.s+ol-1)]*(1-portion)) + (tmp.resp[1:ol] * portion)
       

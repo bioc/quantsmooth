@@ -228,7 +228,7 @@ lengthChromosome<-function(chrom, units=c("cM","bases","ISCN")) {
                ISCN =  chromdata[nrow(chromdata),"ISCN.bot"])
 }
 
-drawSimpleChrom<-function(x,y,len=3,width=1,fill,col,orientation=c("h","v"),centromere.size=3*width) {
+drawSimpleChrom<-function(x,y,len=3,width=1,fill,col,orientation=c("h","v"),centromere.size=0.6) {
   # put a simple drawing of a chromosome p:q = 1:2
   # events can be indictaed by fill and col fill=c("a","p","q","p1","p2","p3","q1","q2","q3")
   bandpos<-cbind(c(0,1,2,3,4,7),c(1,2,3,4,7,8))*len/8
@@ -236,7 +236,7 @@ drawSimpleChrom<-function(x,y,len=3,width=1,fill,col,orientation=c("h","v"),cent
   centromere<-3
   idx<-c(2:(centromere-1), (centromere+2):(n-1))
   bandcol=rep("white",6)
-  if (!missing(fill))  for (i in 1:length(fill)) {
+  if (!missing(fill)) if(length(fill)>0) for (i in 1:length(fill)) {
     if (fill[i]=="a") bandcol[1:6]<-col[i]
     else if (fill[i]=="p") bandcol[1:3]<-col[i]
     else if (fill[i]=="q") bandcol[4:6]<-col[i]
@@ -271,8 +271,8 @@ drawSimpleChrom<-function(x,y,len=3,width=1,fill,col,orientation=c("h","v"),cent
     semicircle(x+bandpos[centromere,1], y-0.5*width, width, bandpos[centromere,2]-bandpos[centromere,1], 4, col=1, plottype="line")
     semicircle(x+bandpos[centromere+1,2], y-0.5*width, width, bandpos[centromere+1,2]-bandpos[centromere+1,1], 2, col=1, plottype="line")
     # draw the centromere
-    points(x+bandpos[centromere,2], y, col="black", cex=centromere.size, pch=16)
-    points(x+bandpos[centromere,2], y, col="white", cex=centromere.size, pch=20)
+    centromere.size=centromere.size*0.5*width/yinch(1)
+    symbols(x+bandpos[centromere,2], y,circles=1,inches=centromere.size, add=TRUE,fg="black",bg="white")
   } else {
     # draw the inside filling
     rect(x+0.5*width,y-bandpos[idx,1],x-0.5*width,y-bandpos[idx,2], col=bandcol[idx], density=banddens[idx], border=NA)
@@ -294,8 +294,8 @@ drawSimpleChrom<-function(x,y,len=3,width=1,fill,col,orientation=c("h","v"),cent
     semicircle(x-0.5*width, y-bandpos[centromere,1], width, bandpos[centromere,2]-bandpos[centromere,1], 1, col=1, plottype="line")
     semicircle(x-0.5*width, y-bandpos[centromere+1,2], width, bandpos[centromere+1,2]-bandpos[centromere+1,1], 3, col=1, plottype="line")
     # draw the centromere
-    points(x, y-bandpos[centromere,2], col="black", cex=centromere.size, pch=16)
-    points(x, y-bandpos[centromere,2], col="white", cex=centromere.size, pch=20)
+    centromere.size=centromere.size*0.5*width/xinch(1)
+    symbols(x, y-bandpos[centromere,2],circles=1,inches=centromere.size, add=TRUE,fg="black",bg="white")
   }
 }
 
