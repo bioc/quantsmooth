@@ -159,7 +159,7 @@ getChangedIdx<-function(changed, up) {
   } else NULL
 }
 
-getChangedRegions<-function(intensities, positions, normalized.to=1, smooth.lambda=2, interval, threshold, minlength=2) {
+getChangedRegions<-function(intensities, positions, normalized.to=1, interval, threshold, minlength=2, ...) {
   # determine regions with changes after smoothing
   # normalized.to: value to compare with
   # smooth.lambda: smoothing parameter
@@ -170,12 +170,13 @@ getChangedRegions<-function(intensities, positions, normalized.to=1, smooth.lamb
   #
   # value        : dataframe 3 columns up, start, end
 	if (missing(positions)) positions<-1:length(intensities)
+	if (!is.null(match.call()$tau)) stop("tau is set by the function")
 	if (length(positions)!=length(intensities)) stop("Length of positions argument should be equal to length of intensities argument")
   if (!missing(interval)) {
-    res<-rbind(getChangedIdx(quantsmooth(intensities,smooth.lambda,tau=0.5-(interval/2)) > normalized.to,TRUE),
-          getChangedIdx(quantsmooth(intensities,smooth.lambda,tau=0.5+(interval/2)) < normalized.to,FALSE))
+    res<-rbind(getChangedIdx(quantsmooth(intensities,tau=0.5-(interval/2),...) > normalized.to,TRUE),
+          getChangedIdx(quantsmooth(intensities,tau=0.5+(interval/2),...) < normalized.to,FALSE))
   } else if (!missing(threshold)) {
-    smoothed<-quantsmooth(intensities,smooth.lambda,tau=0.5)
+    smoothed<-quantsmooth(intensities,tau=0.5,...)
     res<-rbind(getChangedIdx(smoothed > (normalized.to+threshold),TRUE),
           getChangedIdx(smoothed < (normalized.to-threshold),FALSE))
   } else stop("Either treshold or interval should be defined")
