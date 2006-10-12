@@ -149,7 +149,7 @@ plotSmoothed<-function(intensities, position, ylim=NULL, ylab="intensity", xlab=
 }
 
 getChangedIdx<-function(changed, up) {
-  if (sum(changed)>0) {
+  if (sum(changed,na.rm=TRUE)>0) {
     crossing<-xor(c(FALSE,changed),c(changed,FALSE))
     position<-seq(1,length.out=length(crossing))[crossing]
     startidx<-seq(1,by=2,length.out=length(position) / 2) # odd indexes
