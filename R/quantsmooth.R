@@ -117,7 +117,7 @@ getLambdaMin<-function(intensities, lambdas, ...) {
   lambdas[which.min(lambda.res)]
 }
 #
-plotSmoothed<-function(intensities, position, ylim=NULL, ylab="intensity", xlab="position", normalized.to=NULL, grid=NULL, smooth.lambda=2, interval=0.5, plotnew=TRUE, cols, ...) {
+plotSmoothed<-function(intensities, position, ylim=NULL, ylab="intensity", xlab="position", normalized.to=NULL, grid=NULL, smooth.lambda=2, interval=0.5, plotnew=TRUE, cols, cex.pts=0.6, ...) {
   # plot smoothed data
   # median line is drawn continuous
   # quantile intervals are plotted symmetrical around median ie interval 0.5 plots 0.25 and 0.75 quantiles
@@ -135,7 +135,7 @@ plotSmoothed<-function(intensities, position, ylim=NULL, ylab="intensity", xlab=
   intensities<-intensities[idx,,drop=FALSE]
   
   for (sample in 1:ncol(intensities)) {
-	  points(position,intensities[,sample],col=cols[sample],pch=20,cex=0.6)
+	  if (cex.pts>0) points(position,intensities[,sample],col=cols[sample],pch=20,cex=cex.pts)
     if (sum(!is.na(intensities[,sample]))>10) {
       lines(position, quantsmooth(intensities[,sample],smooth.lambda), col=cols[sample], lwd=2)
       if (length(interval)>0) {
