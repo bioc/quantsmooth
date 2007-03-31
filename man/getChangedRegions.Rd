@@ -8,17 +8,17 @@
 }
 
 \usage{
-  getChangedRegions(intensities, positions, normalized.to=1, smooth.lambda=2, interval, threshold, minlength=2)
+  getChangedRegions(intensities, positions, normalized.to=1, interval, threshold, minlength=2, \dots)
 }
 
 \arguments{
    \item{intensities}{numeric vector}
    \item{positions}{numeric vector of the same length as intensities. If this argument is not given the results contain the indexes of the \code{intensities} vector, else the values in \code{positions} are used. Both vectors are sorted in the order of \code{positions}. }
    \item{normalized.to}{numeric, reference value. Changes are compared to this value}
-   \item{smooth.lambda}{smoothing parameter}
    \item{interval}{numeric [0,1], bandwidth around reference. If the smoothed line at the higher quantile drops below the \code{normalized.to} value, a deleted region is recognized, and vice versa.}
    \item{threshold}{numeric, if the median smoothed value drops below \code{normalized.to - threshold}, or above \code{normalized.to + threshold} a changed region is called}
    \item{minlength}{integer, not used currently}
+   \item{\dots}{extra arguments for \code{quantsmooth} function}
 }
 
 \details{

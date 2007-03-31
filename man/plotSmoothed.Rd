@@ -8,7 +8,7 @@
 }
 
 \usage{
-  plotSmoothed(intensities, position, ylim=NULL, ylab="intensity", xlab="position", normalized.to=NULL, grid=NULL, smooth.lambda=2, interval=0.5, plotnew=TRUE, cols, \dots)
+  plotSmoothed(intensities, position, ylim=NULL, ylab="intensity", xlab="position", normalized.to=NULL, grid=NULL, smooth.lambda=2, interval=0.5, plotnew=TRUE, cols, cex.pts = 0.6, \dots)
 }
 
 \arguments{
@@ -23,6 +23,7 @@
    \item{interval}{numeric (0..1), plotting of extra smoothed lines around median. With \code{interval} = 0.5 the 0.25 and 0.75 quartiles are plotted, with \code{interval} = 0.9 the 0.05 and 0.95 quantiles are plotted, }
    \item{plotnew}{logical, if TRUE a new plot is created, else the data are plotted into an existing plot}
    \item{cols}{color vector, colors for columns in \code{intensities} }
+   \item{cex.pts}{size of the dots in the plot. Set to \code{0} to skip plotting the dots}
    \item{\dots}{extra parameters for \code{plot}}
 }
 
