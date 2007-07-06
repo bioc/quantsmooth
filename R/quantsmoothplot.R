@@ -33,7 +33,8 @@ scaleto <-function(x,fromlimits=c(0,50),tolimits=c(0.5,-0.5),adjust=TRUE) {
 plotChromosome<-function(gendata,chrompos,chromosome,dataselection=NULL,ylim=NULL,normalized.to=NULL,grid=NULL,smooth.lambda=2,interval=0.5,...) {
   # uses gcsmoothing.R
   if (is.null(dataselection)) dataselection<-rep(TRUE,ncol(gendata))
-  plotSmoothed(gendata[chrompos[,"CHR"]==chromosome,dataselection],chrompos[chrompos[,"CHR"]==chromosome,"MapInfo"],ylim,normalized.to,grid,smooth.lambda,interval,...)
+  plotSmoothed(gendata[chrompos[,"CHR"]==chromosome,dataselection],chrompos[chrompos[,"CHR"]==chromosome,"MapInfo"],ylim=ylim,normalized.to=normalized.to,
+    grid=grid,smooth.lambda=smooth.lambda,interval=interval,...)
 }
 #
 prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0,topspace=1,organism,sexChromosomes=FALSE,...) {
