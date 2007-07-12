@@ -37,6 +37,63 @@
   }
 }
 
+quantsmooth.seg  =  function(y, x = 1:length(y), lambda = 2, tau = 0.5,
+                              kappa = 0, nb = length(x)) {
+  # Quantile smoothing with smaller basis
+  # Basis has nb segments
+  # 
+  # Paul Eilers, 2007
+  # Based on function .quantsmooth() in package 'quantsmooth' (Oosting et al.)
+                            
+  # Remove NAs before computation
+  nas = is.na(y)
+  m = length(y)
+  if (m == sum(nas)) {
+      warning("data is all NA, result is NA")
+      return(NA * y)
+  }
+
+  # Construct regression basis
+  dx = (1+1e-7) * (max(x) - min(x)) / nb
+  ix =  floor((x - min(x)) / dx) + 1
+  if (nb == m) ix = 1:m
+  B = outer(ix, 1:nb, '==')
+  
+  # Zero weights for NAs
+  B[nas,] = 0
+  y[nas] = 0
+
+  # Augment data with penalty stuff
+  E = diag(nb)
+  D = diff(E)
+  B = rbind(B, lambda * D)
+  ystar = c(y, rep(0, nb - 1))
+  if (kappa > 0) {
+    B  =  rbind(B, kappa * E)
+    ystar  =  c(ystar, rep(0, nb))
+  }
+  
+  # Try quantile regression
+  myrq = try(rq.fit(B, ystar, tau = tau, method = "fn"), TRUE)
+  
+  # If result is OK, return smooth result
+  if (class(myrq) != "try-error") {
+      a = myrq$coeff
+      z = a[ix]
+      return(z)
+  }
+  
+  # If failure, even with kappa >0, return warning
+  if (kappa > 0) return(myrq)
+  
+  # If failure and kappa >0, retry wih reasonable kappa
+  warning("Problem with fit, repeated with kappa = 0.001 * lambda")
+  z = quantsmooth.seg(y, x, lambda = lambda, tau = tau,
+                       kappa = lambda * 0.001, nb = nb)
+  return(z)
+}
+
+
 quantsmooth<-function(intensities, smooth.lambda=2, tau=0.5, ridge.kappa=0, smooth.na=TRUE, segment) {
   # if segment is set then the sequence is smoothed with overlapping segments
   # The algorhithm has steeply increasing memory needs for longer sequences
@@ -150,6 +207,7 @@ plotSmoothed<-function(intensities, position, ylim=NULL, ylab="intensity", xlab=
 
 getChangedIdx<-function(changed, up) {
   if (sum(changed,na.rm=TRUE)>0) {
+    changed[is.na(changed)]<-FALSE
     crossing<-xor(c(FALSE,changed),c(changed,FALSE))
     position<-seq(1,length.out=length(crossing))[crossing]
     startidx<-seq(1,by=2,length.out=length(position) / 2) # odd indexes
