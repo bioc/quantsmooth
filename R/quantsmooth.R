@@ -37,7 +37,7 @@
   }
 }
 
-quantsmooth.seg  =  function(y, x = 1:length(y), lambda = 2, tau = 0.5,
+quantsmooth.seg  <-  function(y, x = 1:length(y), lambda = 2, tau = 0.5,
                               kappa = 0, nb = length(x)) {
   # Quantile smoothing with smaller basis
   # Basis has nb segments
