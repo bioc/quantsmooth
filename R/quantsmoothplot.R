@@ -233,6 +233,41 @@ lengthChromosome<-function(chrom, units=c("cM","bases","ISCN")) {
                ISCN =  chromdata[nrow(chromdata),"ISCN.bot"])
 }
 
+position2Cytoband<-function(chrom,position,units=c("cM","bases","ISCN"),bands=c("major","minor")) {
+  require(lodplot)
+  data(chrom.bands)
+  chrom<-switch(as.character(chrom),
+         "98"="X",
+         "99"="Y",
+         as.character(chrom))
+  units<-match.arg(units)
+  bands<-match.arg(bands)
+  chromdata<-subset(chrom.bands, chrom.bands$chr==chrom)
+  if (nrow(chromdata)==0) stop("invalid chromosome:",chrom)
+  lc<-nchar(chromdata$band)
+  sel<-!(substr(chromdata$band,lc,lc) %in% letters)
+  if (bands=="minor") 
+    sel<-!sel
+  chromdata<-chromdata[sel,]
+  rm(lc,sel)
+  positions<-switch(units,
+           cM =chromdata[,c("cM.top","cM.bot")],
+           bases = chromdata[,c("bases.top","bases.bot")],
+           ISCN =  chromdata[,c("ISCN.top","ISCN.bot")])
+  res<-NULL
+  for (pos1 in position) {         
+    cb<-which(pos1>=positions[,1] & pos1<=positions[,2])
+    if (length(cb)>0)         
+      res<-c(res,paste(chromdata[cb,1:3],collapse=""))
+    else {
+      warning("Position ",pos1," not valid for chromosome ",chrom,". It should be between ",positions[1,1]," and ",positions[nrow(positions),2])
+      res<-c(res,"-")
+    }
+  }
+  res
+}
+
+
 drawSimpleChrom<-function(x,y,len=3,width=1,fill,col,orientation=c("h","v"),centromere.size=0.6) {
   # put a simple drawing of a chromosome p:q = 1:2
   # events can be indictaed by fill and col fill=c("a","p","q","p1","p2","p3","q1","q2","q3")
