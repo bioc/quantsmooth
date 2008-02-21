@@ -194,11 +194,11 @@ plotSmoothed<-function(intensities, position, ylim=NULL, ylab="intensity", xlab=
   for (sample in 1:ncol(intensities)) {
 	  if (cex.pts>0) points(position,intensities[,sample],col=cols[sample],pch=20,cex=cex.pts)
     if (sum(!is.na(intensities[,sample]))>10) {
-      lines(position, quantsmooth(intensities[,sample],smooth.lambda), col=cols[sample], lwd=2)
+      lines(position, quantsmooth(intensities[,sample],smooth.lambda,segment=150), col=cols[sample], lwd=2)
       if (length(interval)>0) {
         for (i in 1:length(interval)) {
-          lines(position, quantsmooth(intensities[,sample],smooth.lambda,tau=0.5-(interval[i]/2)), col=cols[sample], lty=1+i)
-          lines(position, quantsmooth(intensities[,sample],smooth.lambda,tau=0.5+(interval[i]/2)), col=cols[sample], lty=1+i)
+          lines(position, quantsmooth(intensities[,sample],smooth.lambda,tau=0.5-(interval[i]/2),segment=150), col=cols[sample], lty=1+i)
+          lines(position, quantsmooth(intensities[,sample],smooth.lambda,tau=0.5+(interval[i]/2),segment=150), col=cols[sample], lty=1+i)
         }
       }
     }
