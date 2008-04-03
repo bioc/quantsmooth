@@ -139,6 +139,7 @@ semicircle <- function(base.x, base.y, base.length, height=base.length, side=1, 
   )
 }
 #
+
 paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=0.4, length.out, bands="major", orientation=c("h","v"), legend = TRUE, cex.leg=0.7, bleach = 0) {
   # Based on paint.chromosome from lodplot package
   # added:
@@ -150,6 +151,7 @@ paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=
   #  -orientation
   #  extracted semicircle for general use
   bleacher<-function(x) { (x * (1-bleach)) + bleach}
+  
   require(lodplot)
   data(chrom.bands)
   chrom<-switch(as.character(chrom),
@@ -219,6 +221,74 @@ paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=
   }
 }
 
+grid.chromosome<-function (chrom, units=c("cM","bases","ISCN"), width=0.5, length.out, 
+                           bands="major", legend = c("chrom","band","none"), cex.leg=0.7, 
+                           bleach = 0, ...)
+{
+  bleacher<-function(x) { (x * (1-bleach)) + bleach}
+  require(grid)
+  data(chrom.bands)
+  units<-match.arg(units)
+  legend<-match.arg(legend)
+  chrom<-switch(as.character(chrom),
+         "98"="X",
+         "99"="Y",
+         as.character(chrom))
+    #if (new)
+    #    grid.newpage()
+  chromdata <- subset(chrom.bands, chrom.bands$chr == chrom)
+  if (nrow(chromdata)>0){
+    lc <- nchar(chromdata$band)
+    sel <- !(substr(chromdata$band, lc, lc) %in% letters)
+    if (bands != "major")
+        sel <- !sel
+    chromdata <- chromdata[sel, ]
+    rm(lc, sel)
+    bandpos<-switch(units,
+           cM =chromdata[,c("cM.top","cM.bot")],
+           bases = chromdata[,c("bases.top","bases.bot")],
+           ISCN =  chromdata[,c("ISCN.top","ISCN.bot")])
+
+    type.b<-match(chromdata$stain,c("acen","gneg", "gpos", "gvar", "stalk"))
+    bandcol<-gray(bleacher(c(0.5,1,0.2,0.6,0.75)))[type.b]
+    banddens<-c(30,-1,-1,-1,10)[type.b]
+    bandbord<-gray(bleacher(c(0,0,0,0,1)))[type.b]
+    if (!missing(length.out)) {
+      bandpos<-(bandpos/max(bandpos))*length.out
+    }
+    n<-nrow(chromdata)
+    centromere<-which(chromdata$arm[-n]!=chromdata$arm[-1])
+    idx<-c(2:(centromere-1), (centromere+2):(n-1))
+
+    pushViewport(viewport(xscale = c(bandpos[1,1] , bandpos[n,2] ), yscale = c(0, 1), clip = "on",...))
+    grid.rect(x = bandpos[idx,1], y = 0, width = bandpos[idx,2] -
+        bandpos[idx,1], height = width, just = c("left",
+        "bottom"), default.units = "native", gp = gpar(fill = bandcol[idx]))
+    grid.semicircle(bandpos[1,2], 0, width,
+        bandpos[1,2] - bandpos[1,1], 2, col = bandcol[1])
+    grid.semicircle(bandpos[n,1], 0, width,
+        bandpos[n,2] - bandpos[n,1], 4, col = bandcol[n])
+    grid.semicircle(bandpos[centromere,1], 0, width, 
+        bandpos[centromere,2] - bandpos[centromere,1],
+        4, col = bandcol[centromere])
+    grid.semicircle(bandpos[centromere + 1,2], 0, width, 
+        bandpos[centromere + 1,2] - bandpos[centromere + 1,1], 
+        2, col = bandcol[centromere + 1])
+    #centromere.size=0.6*0.5*width/yinch(1)
+    grid.circle(bandpos[centromere,2], 0.5*width, unit(width*0.6,"native"),gp = gpar(fill = gray(bleacher(0))))
+    if (legend=="chrom") {
+      grid.text(chrom, unit(0.5, "npc"), unit(1-(width/2),"native"), gp = gpar(cex = cex.leg))
+    } else if (legend=="band") {
+      grid.text(paste(chromdata[,"arm"],chromdata[,"band"],sep=""),unit((bandpos[,1]+bandpos[,2])/2,"native"),width,hjust=-0.3,vjust=0.5,rot=90,gp=gpar(cex=cex.leg))    
+    }
+      
+    popViewport()
+  } else {
+    warning(paste("Chromosome",chrom,"is not plotted because cytoband data is not available"))
+  
+  }
+}
+
 lengthChromosome<-function(chrom, units=c("cM","bases","ISCN")) {
   require(lodplot)
   data(chrom.bands)
@@ -232,6 +302,7 @@ lengthChromosome<-function(chrom, units=c("cM","bases","ISCN")) {
                bases = chromdata[nrow(chromdata),"bases.bot"],
                ISCN =  chromdata[nrow(chromdata),"ISCN.bot"])
 }
+
 
 position2Cytoband<-function(chrom,position,units=c("cM","bases","ISCN"),bands=c("major","minor")) {
   require(lodplot)
