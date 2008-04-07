@@ -138,6 +138,36 @@ semicircle <- function(base.x, base.y, base.length, height=base.length, side=1, 
     line=lines(x,y,...)
   )
 }
+
+qs.semicircle<-function (base.x, base.y, base.length, height = base.length, 
+    side = 1, orientation = NULL, ...) 
+{
+    radius <- base.length/2
+    x <- radius * seq(-1, 1, length = 40)
+    y <- height/radius * sqrt(radius^2 - x^2)
+    if (is.null(orientation)) {
+        co <- as.integer(cos(pi * (3 - side)/2))
+        so <- as.integer(sin(pi * (3 - side)/2))
+    }
+    else {
+        co <- cos(orientation)
+        so <- sin(orientation)
+    }
+    tx <- co * x - so * y
+    ty <- so * x + co * y
+    if (is.null(orientation)) {
+        if (side == 1 || side == 3) {
+            base.x <- base.x + radius
+        }
+        else if (side == 2 || side == 4) {
+            base.y <- base.y + radius
+        }
+    }
+    x <- base.x + tx
+    y <- base.y + ty
+    grid.polygon(x, y, ...)
+}
+
 #
 
 paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=0.4, length.out, bands="major", orientation=c("h","v"), legend = TRUE, cex.leg=0.7, bleach = 0) {
@@ -221,13 +251,14 @@ paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=
   }
 }
 
-grid.chromosome<-function (chrom, units=c("cM","bases","ISCN"), width=0.5, length.out, 
+grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), width=0.5, length.out, 
                            bands="major", legend = c("chrom","band","none"), cex.leg=0.7, 
                            bleach = 0, ...)
 {
   bleacher<-function(x) { (x * (1-bleach)) + bleach}
   require(grid)
   data(chrom.bands)
+  side<-max(1,min(side,4))
   units<-match.arg(units)
   legend<-match.arg(legend)
   chrom<-switch(as.character(chrom),
@@ -259,29 +290,63 @@ grid.chromosome<-function (chrom, units=c("cM","bases","ISCN"), width=0.5, lengt
     n<-nrow(chromdata)
     centromere<-which(chromdata$arm[-n]!=chromdata$arm[-1])
     idx<-c(2:(centromere-1), (centromere+2):(n-1))
-
-    pushViewport(viewport(xscale = c(bandpos[1,1] , bandpos[n,2] ), yscale = c(0, 1), clip = "on",...))
-    grid.rect(x = bandpos[idx,1], y = 0, width = bandpos[idx,2] -
-        bandpos[idx,1], height = width, just = c("left",
-        "bottom"), default.units = "native", gp = gpar(fill = bandcol[idx]))
-    grid.semicircle(bandpos[1,2], 0, width,
-        bandpos[1,2] - bandpos[1,1], 2, col = bandcol[1])
-    grid.semicircle(bandpos[n,1], 0, width,
-        bandpos[n,2] - bandpos[n,1], 4, col = bandcol[n])
-    grid.semicircle(bandpos[centromere,1], 0, width, 
-        bandpos[centromere,2] - bandpos[centromere,1],
-        4, col = bandcol[centromere])
-    grid.semicircle(bandpos[centromere + 1,2], 0, width, 
-        bandpos[centromere + 1,2] - bandpos[centromere + 1,1], 
-        2, col = bandcol[centromere + 1])
-    #centromere.size=0.6*0.5*width/yinch(1)
-    grid.circle(bandpos[centromere,2], 0.5*width, unit(width*0.6,"native"),gp = gpar(fill = gray(bleacher(0))))
-    if (legend=="chrom") {
-      grid.text(chrom, unit(0.5, "npc"), unit(1-(width/2),"native"), gp = gpar(cex = cex.leg))
-    } else if (legend=="band") {
-      grid.text(paste(chromdata[,"arm"],chromdata[,"band"],sep=""),unit((bandpos[,1]+bandpos[,2])/2,"native"),width,hjust=-0.3,vjust=0.5,rot=90,gp=gpar(cex=cex.leg))    
+    if (side %in% 1:2) {
+      pos.bottom<-0
+      pos.top<-width
+      pos.chrom<-(1+width)/2
+      pos.band<-width+0.1*(1-width)
+    } else {                                                        
+      pos.bottom<-1-width
+      pos.top<-1
+      pos.chrom<-(1-width)/2
+      pos.band<-0.1*(1-width)
     }
-      
+    bleachblack<- gray(bleacher(0))
+    if (side %in% c(1,3)) {
+      pushViewport(viewport(xscale = c(bandpos[1,1] , bandpos[n,2] ), yscale = c(0, 1), clip = "on",...))
+      grid.rect(x = bandpos[idx,1], y = pos.bottom, width = bandpos[idx,2] -
+          bandpos[idx,1], height = width, just = c("left",
+          "bottom"), default.units = "native", gp = gpar(fill = bandcol[idx],col=bandbord[idx]))
+      qs.semicircle(bandpos[1,2], pos.bottom, width,
+          bandpos[1,2] - bandpos[1,1], 2, default.units="native", gp=gpar(fill = bandcol[1],col=bandbord[1]))
+      qs.semicircle(bandpos[n,1], pos.bottom, width,
+          bandpos[n,2] - bandpos[n,1], 4, default.units="native", gp=gpar(fill = bandcol[n],col=bandbord[n]))
+      qs.semicircle(bandpos[centromere,1], pos.bottom, width, 
+          bandpos[centromere,2] - bandpos[centromere,1],
+          4, default.units="native", gp=gpar(fill = bandcol[centromere],col=bandbord[centromere]))
+      qs.semicircle(bandpos[centromere + 1,2], pos.bottom, width, 
+          bandpos[centromere + 1,2] - bandpos[centromere + 1,1], 
+          2, default.units="native", gp=gpar(fill = bandcol[centromere+1],col=bandbord[centromere+1]))
+      #centromere.size=0.6*0.5*width/yinch(1)
+      grid.circle(bandpos[centromere,2], pos.bottom+width/2, unit(width*0.3,"npc"), default.units="native", gp = gpar(col=bleachblack, fill="white", lwd=2))
+      if (legend=="chrom") {
+        grid.text(chrom, unit(0.5, "npc"), unit(pos.chrom,"native"), gp = gpar(cex = cex.leg))
+      } else if (legend=="band") {
+        grid.text(paste(chromdata[,"arm"],chromdata[,"band"],sep=""),(bandpos[,1]+bandpos[,2])/2,pos.band,default.units="native",hjust=0,vjust=0.5,rot=90,gp=gpar(cex=cex.leg))    
+      }
+    } else {
+      pushViewport(viewport(xscale = c(0, 1), yscale = c(bandpos[n,2], bandpos[1,1] ), clip = "on",...))
+      grid.rect(x = pos.bottom, y = bandpos[idx,1], width = width, height = bandpos[idx,2] -
+          bandpos[idx,1], just = c("left", "bottom"), default.units = "native", gp = gpar(fill = bandcol[idx],col=bandbord[idx]))
+      qs.semicircle( pos.bottom, bandpos[1,2],width,
+          bandpos[1,2] - bandpos[1,1],  1, default.units="native", gp=gpar(fill = bandcol[1],col=bandbord[1]))
+      qs.semicircle( pos.bottom, bandpos[n,1], width,
+          bandpos[n,2] - bandpos[n,1], 3, default.units="native", gp=gpar(fill = bandcol[n],col=bandbord[n]))
+      qs.semicircle( pos.bottom, bandpos[centromere,1],  width,
+          bandpos[centromere,2] - bandpos[centromere,1], 
+          3, default.units="native", gp=gpar(fill = bandcol[centromere],col=bandbord[centromere]))
+      qs.semicircle( pos.bottom, bandpos[centromere + 1,2],      width,
+          bandpos[centromere + 1,2] - bandpos[centromere + 1,1],  
+          1, default.units="native", gp=gpar(fill = bandcol[centromere+1],col=bandbord[centromere+1]))
+      #centromere.size=0.6*0.5*width/yinch(1)
+      grid.circle(pos.bottom+width/2, bandpos[centromere,2],  unit(width*0.3,"npc"), default.units="native", gp = gpar(col=bleachblack, fill="white", lwd=2))
+      if (legend=="chrom") {
+        grid.text(chrom, unit(pos.chrom,"native"), unit(0.5, "npc"), gp = gpar(cex = cex.leg))
+      } else if (legend=="band") {
+        grid.text(paste(chromdata[,"arm"],chromdata[,"band"],sep=""),pos.band,(bandpos[,1]+bandpos[,2])/2,default.units="native",hjust=0,vjust=0.5,rot=0,gp=gpar(cex=cex.leg))    
+      }
+    
+    }
     popViewport()
   } else {
     warning(paste("Chromosome",chrom,"is not plotted because cytoband data is not available"))
