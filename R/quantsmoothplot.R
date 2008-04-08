@@ -108,7 +108,7 @@ prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0
 }
 #  data taken from lodplot package
 #  original data available at: ftp://ftp.ncbi.nlm.nih.gov/genomes/H_sapiens/mapview/BUILD.35.1/ideogram.gz.
-semicircle <- function(base.x, base.y, base.length, height=base.length, side=1, orientation=NULL,plottype="poly",...) {
+qs.semicircle <- function(base.x, base.y, base.length, height=base.length, side=1, orientation=NULL,plottype="poly",...) {
   # based on lodplot package
   # - col is now propagated through ..., other plotting parameters can now also be given
   # - different types poly/line 
@@ -139,7 +139,7 @@ semicircle <- function(base.x, base.y, base.length, height=base.length, side=1, 
   )
 }
 
-qs.semicircle<-function (base.x, base.y, base.length, height = base.length, 
+qs.grid.semicircle<-function (base.x, base.y, base.length, height = base.length, 
     side = 1, orientation = NULL, ...) 
 {
     radius <- base.length/2
@@ -216,14 +216,14 @@ paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=
     idx<-c(2:(centromere-1), (centromere+2):(n-1))
     if (orientation=="h") {
       rect(pos[1]+bandpos[idx,1],pos[2],pos[1]+bandpos[idx,2],pos[2]-width, col=bandcol[idx], density=banddens[idx], border=bandbord[idx])
-      semicircle(pos[1]+bandpos[1,2], pos[2]-width, width,
+      qs.semicircle(pos[1]+bandpos[1,2], pos[2]-width, width,
                  bandpos[1,2]-bandpos[1,1], 2, col=bandcol[1], density=banddens[1], border=bandbord[1])
-      semicircle(pos[1]+bandpos[n,1], pos[2]-width, width,
+      qs.semicircle(pos[1]+bandpos[n,1], pos[2]-width, width,
                  bandpos[n,2]-bandpos[n,1], 4, col=bandcol[n], density=banddens[n], border=bandbord[n])
-      semicircle(pos[1]+bandpos[centromere,1], pos[2]-width, width,
+      qs.semicircle(pos[1]+bandpos[centromere,1], pos[2]-width, width,
                  bandpos[centromere,2]-bandpos[centromere,1],
                  4, col=bandcol[centromere], density=banddens[centromere], border=bandbord[centromere])
-      semicircle(pos[1]+bandpos[centromere+1,2], pos[2]-width, width,
+      qs.semicircle(pos[1]+bandpos[centromere+1,2], pos[2]-width, width,
                  bandpos[centromere+1,2]-bandpos[centromere+1,1],
                  2, col=bandcol[centromere+1], density=banddens[centromere+1], border=bandbord[centromere+1])
 
@@ -232,14 +232,14 @@ paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=
       if (legend) text(pos[1]+(bandpos[,1]+bandpos[,2])/2,pos[2]+0.5*width,paste(chromdata[,"arm"],chromdata[,"band"],sep=""),adj=c(0,0.5),srt=90,cex=cex.leg)
     } else {
       rect(pos[1],pos[2]-bandpos[idx,1],pos[1]-width,pos[2]-bandpos[idx,2], col=bandcol[idx], density=banddens[idx], border=bandbord[idx])
-      semicircle(pos[1]-width, pos[2]-bandpos[1,2], width,
+      qs.semicircle(pos[1]-width, pos[2]-bandpos[1,2], width,
                  bandpos[1,2]-bandpos[1,1], 3, col=bandcol[1], density=banddens[1], border=bandbord[1])
-      semicircle(pos[1]-width, pos[2]-bandpos[n,1], width,
+      qs.semicircle(pos[1]-width, pos[2]-bandpos[n,1], width,
                  bandpos[n,2]-bandpos[n,1], 1, col=bandcol[n], density=banddens[n], border=bandbord[n])
-      semicircle(pos[1]-width, pos[2]-bandpos[centromere,1], width,
+      qs.semicircle(pos[1]-width, pos[2]-bandpos[centromere,1], width,
                  bandpos[centromere,2]-bandpos[centromere,1],
                  1, col=bandcol[centromere], density=banddens[centromere], border=bandbord[centromere])
-      semicircle(pos[1]-width, pos[2]-bandpos[centromere+1,2], width,
+      qs.semicircle(pos[1]-width, pos[2]-bandpos[centromere+1,2], width,
                  bandpos[centromere+1,2]-bandpos[centromere+1,1],
                  3, col=bandcol[centromere+1], density=banddens[centromere+1], border=bandbord[centromere+1])
       centromere.size=0.6*0.5*width/xinch(1)
@@ -251,7 +251,7 @@ paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=
   }
 }
 
-grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), width=0.5, length.out, 
+grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.width=0.5, length.out, 
                            bands="major", legend = c("chrom","band","none"), cex.leg=0.7, 
                            bleach = 0, ...)
 {
@@ -292,33 +292,33 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), width=0.
     idx<-c(2:(centromere-1), (centromere+2):(n-1))
     if (side %in% 1:2) {
       pos.bottom<-0
-      pos.top<-width
-      pos.chrom<-(1+width)/2
-      pos.band<-width+0.1*(1-width)
+      pos.top<-chrom.width
+      pos.chrom<-(1+chrom.width)/2
+      pos.band<-chrom.width+0.1*(1-chrom.width)
     } else {                                                        
-      pos.bottom<-1-width
+      pos.bottom<-1-chrom.width
       pos.top<-1
-      pos.chrom<-(1-width)/2
-      pos.band<-0.1*(1-width)
+      pos.chrom<-(1-chrom.width)/2
+      pos.band<-0.1*(1-chrom.width)
     }
     bleachblack<- gray(bleacher(0))
     if (side %in% c(1,3)) {
       pushViewport(viewport(xscale = c(bandpos[1,1] , bandpos[n,2] ), yscale = c(0, 1), clip = "on",...))
       grid.rect(x = bandpos[idx,1], y = pos.bottom, width = bandpos[idx,2] -
-          bandpos[idx,1], height = width, just = c("left",
+          bandpos[idx,1], height = chrom.width, just = c("left",
           "bottom"), default.units = "native", gp = gpar(fill = bandcol[idx],col=bandbord[idx]))
-      qs.semicircle(bandpos[1,2], pos.bottom, width,
+      qs.grid.semicircle(bandpos[1,2], pos.bottom, chrom.width,
           bandpos[1,2] - bandpos[1,1], 2, default.units="native", gp=gpar(fill = bandcol[1],col=bandbord[1]))
-      qs.semicircle(bandpos[n,1], pos.bottom, width,
+      qs.grid.semicircle(bandpos[n,1], pos.bottom, chrom.width,
           bandpos[n,2] - bandpos[n,1], 4, default.units="native", gp=gpar(fill = bandcol[n],col=bandbord[n]))
-      qs.semicircle(bandpos[centromere,1], pos.bottom, width, 
+      qs.grid.semicircle(bandpos[centromere,1], pos.bottom, chrom.width, 
           bandpos[centromere,2] - bandpos[centromere,1],
           4, default.units="native", gp=gpar(fill = bandcol[centromere],col=bandbord[centromere]))
-      qs.semicircle(bandpos[centromere + 1,2], pos.bottom, width, 
+      qs.grid.semicircle(bandpos[centromere + 1,2], pos.bottom, chrom.width, 
           bandpos[centromere + 1,2] - bandpos[centromere + 1,1], 
           2, default.units="native", gp=gpar(fill = bandcol[centromere+1],col=bandbord[centromere+1]))
       #centromere.size=0.6*0.5*width/yinch(1)
-      grid.circle(bandpos[centromere,2], pos.bottom+width/2, unit(width*0.3,"npc"), default.units="native", gp = gpar(col=bleachblack, fill="white", lwd=2))
+      grid.circle(bandpos[centromere,2], pos.bottom+chrom.width/2, unit(chrom.width*0.3,"npc"), default.units="native", gp = gpar(col=bleachblack, fill="white", lwd=2))
       if (legend=="chrom") {
         grid.text(chrom, unit(0.5, "npc"), unit(pos.chrom,"native"), gp = gpar(cex = cex.leg))
       } else if (legend=="band") {
@@ -326,20 +326,20 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), width=0.
       }
     } else {
       pushViewport(viewport(xscale = c(0, 1), yscale = c(bandpos[n,2], bandpos[1,1] ), clip = "on",...))
-      grid.rect(x = pos.bottom, y = bandpos[idx,1], width = width, height = bandpos[idx,2] -
+      grid.rect(x = pos.bottom, y = bandpos[idx,1], width = chrom.width, height = bandpos[idx,2] -
           bandpos[idx,1], just = c("left", "bottom"), default.units = "native", gp = gpar(fill = bandcol[idx],col=bandbord[idx]))
-      qs.semicircle( pos.bottom, bandpos[1,2],width,
+      qs.grid.semicircle( pos.bottom, bandpos[1,2],chrom.width,
           bandpos[1,2] - bandpos[1,1],  1, default.units="native", gp=gpar(fill = bandcol[1],col=bandbord[1]))
-      qs.semicircle( pos.bottom, bandpos[n,1], width,
+      qs.grid.semicircle( pos.bottom, bandpos[n,1], chrom.width,
           bandpos[n,2] - bandpos[n,1], 3, default.units="native", gp=gpar(fill = bandcol[n],col=bandbord[n]))
-      qs.semicircle( pos.bottom, bandpos[centromere,1],  width,
+      qs.grid.semicircle( pos.bottom, bandpos[centromere,1],  chrom.width,
           bandpos[centromere,2] - bandpos[centromere,1], 
           3, default.units="native", gp=gpar(fill = bandcol[centromere],col=bandbord[centromere]))
-      qs.semicircle( pos.bottom, bandpos[centromere + 1,2],      width,
+      qs.grid.semicircle( pos.bottom, bandpos[centromere + 1,2],      chrom.width,
           bandpos[centromere + 1,2] - bandpos[centromere + 1,1],  
           1, default.units="native", gp=gpar(fill = bandcol[centromere+1],col=bandbord[centromere+1]))
       #centromere.size=0.6*0.5*width/yinch(1)
-      grid.circle(pos.bottom+width/2, bandpos[centromere,2],  unit(width*0.3,"npc"), default.units="native", gp = gpar(col=bleachblack, fill="white", lwd=2))
+      grid.circle(pos.bottom+chrom.width/2, bandpos[centromere,2],  unit(chrom.width*0.3,"npc"), default.units="native", gp = gpar(col=bleachblack, fill="white", lwd=2))
       if (legend=="chrom") {
         grid.text(chrom, unit(pos.chrom,"native"), unit(0.5, "npc"), gp = gpar(cex = cex.leg))
       } else if (legend=="band") {
@@ -427,14 +427,14 @@ drawSimpleChrom<-function(x,y,len=3,width=1,fill,col,orientation=c("h","v"),cent
   if (orientation[1]=="h") {
     # draw the inside filling
     rect(x+bandpos[idx,1],y+0.5*width,x+bandpos[idx,2],y-0.5*width, col=bandcol[idx], density=banddens[idx], border=NA)
-    semicircle(x+bandpos[1,2], y-0.5*width, width,
+    qs.semicircle(x+bandpos[1,2], y-0.5*width, width,
                bandpos[1,2]-bandpos[1,1], 2, col=bandcol[1], density=banddens[1], border=NA)
-    semicircle(x+bandpos[n,1], y-0.5*width, width,
+    qs.semicircle(x+bandpos[n,1], y-0.5*width, width,
                bandpos[n,2]-bandpos[n,1], 4, col=bandcol[n], density=banddens[n], border=NA)
-    semicircle(x+bandpos[centromere,1], y-0.5*width, width,
+    qs.semicircle(x+bandpos[centromere,1], y-0.5*width, width,
                bandpos[centromere,2]-bandpos[centromere,1],
                4, col=bandcol[centromere], density=banddens[centromere], border=NA)
-    semicircle(x+bandpos[centromere+1,2], y-0.5*width, width,
+    qs.semicircle(x+bandpos[centromere+1,2], y-0.5*width, width,
                bandpos[centromere+1,2]-bandpos[centromere+1,1],
                2, col=bandcol[centromere+1], density=banddens[centromere+1], border=NA)
     # draw the circumference
@@ -442,33 +442,33 @@ drawSimpleChrom<-function(x,y,len=3,width=1,fill,col,orientation=c("h","v"),cent
       lines(x+bandpos[i,1:2],rep(y+0.5*width,2),col=1)
       lines(x+bandpos[i,1:2],rep(y-0.5*width,2),col=1)
     }
-    semicircle(x+bandpos[1,2], y-0.5*width, width, bandpos[1,2]-bandpos[1,1], 2, col=1, plottype="line")
-    semicircle(x+bandpos[n,1], y-0.5*width, width, bandpos[n,2]-bandpos[n,1], 4, col=1, plottype="line")
-    semicircle(x+bandpos[centromere,1], y-0.5*width, width, bandpos[centromere,2]-bandpos[centromere,1], 4, col=1, plottype="line")
-    semicircle(x+bandpos[centromere+1,2], y-0.5*width, width, bandpos[centromere+1,2]-bandpos[centromere+1,1], 2, col=1, plottype="line")
+    qs.semicircle(x+bandpos[1,2], y-0.5*width, width, bandpos[1,2]-bandpos[1,1], 2, col=1, plottype="line")
+    qs.semicircle(x+bandpos[n,1], y-0.5*width, width, bandpos[n,2]-bandpos[n,1], 4, col=1, plottype="line")
+    qs.semicircle(x+bandpos[centromere,1], y-0.5*width, width, bandpos[centromere,2]-bandpos[centromere,1], 4, col=1, plottype="line")
+    qs.semicircle(x+bandpos[centromere+1,2], y-0.5*width, width, bandpos[centromere+1,2]-bandpos[centromere+1,1], 2, col=1, plottype="line")
     # draw the centromere
     centromere.size=centromere.size*0.5*width/yinch(1)
     symbols(x+bandpos[centromere,2], y,circles=1,inches=centromere.size, add=TRUE,fg="black",bg="white")
   } else {
     # draw the inside filling
     rect(x+0.5*width,y-bandpos[idx,1],x-0.5*width,y-bandpos[idx,2], col=bandcol[idx], density=banddens[idx], border=NA)
-    semicircle(x-0.5*width, y-bandpos[1,2], width, bandpos[1,2]-bandpos[1,1],
+    qs.semicircle(x-0.5*width, y-bandpos[1,2], width, bandpos[1,2]-bandpos[1,1],
                3, col=bandcol[1], density=banddens[1], border=NA)
-    semicircle(x-0.5*width, y-bandpos[n,1], width, bandpos[n,2]-bandpos[n,1], 
+    qs.semicircle(x-0.5*width, y-bandpos[n,1], width, bandpos[n,2]-bandpos[n,1], 
                1, col=bandcol[n], density=banddens[n], border=NA)
-    semicircle(x-0.5*width, y-bandpos[centromere,1], width, bandpos[centromere,2]-bandpos[centromere,1],
+    qs.semicircle(x-0.5*width, y-bandpos[centromere,1], width, bandpos[centromere,2]-bandpos[centromere,1],
                1, col=bandcol[centromere], density=banddens[centromere], border=NA)
-    semicircle(x-0.5*width, y-bandpos[centromere+1,2], width, bandpos[centromere+1,2]-bandpos[centromere+1,1],
+    qs.semicircle(x-0.5*width, y-bandpos[centromere+1,2], width, bandpos[centromere+1,2]-bandpos[centromere+1,1],
                3, col=bandcol[centromere+1], density=banddens[centromere+1], border=NA)
     # draw the circumference
     for (i in idx) {
       lines(rep(x+0.5*width,2),y-bandpos[i,1:2],col=1)
       lines(rep(x-0.5*width,2),y-bandpos[i,1:2],col=1)
     }
-    semicircle(x-0.5*width, y-bandpos[1,2], width, bandpos[1,2]-bandpos[1,1], 3, col=1, plottype="line")
-    semicircle(x-0.5*width, y-bandpos[n,1], width, bandpos[n,2]-bandpos[n,1], 1, col=1, plottype="line")
-    semicircle(x-0.5*width, y-bandpos[centromere,1], width, bandpos[centromere,2]-bandpos[centromere,1], 1, col=1, plottype="line")
-    semicircle(x-0.5*width, y-bandpos[centromere+1,2], width, bandpos[centromere+1,2]-bandpos[centromere+1,1], 3, col=1, plottype="line")
+    qs.semicircle(x-0.5*width, y-bandpos[1,2], width, bandpos[1,2]-bandpos[1,1], 3, col=1, plottype="line")
+    qs.semicircle(x-0.5*width, y-bandpos[n,1], width, bandpos[n,2]-bandpos[n,1], 1, col=1, plottype="line")
+    qs.semicircle(x-0.5*width, y-bandpos[centromere,1], width, bandpos[centromere,2]-bandpos[centromere,1], 1, col=1, plottype="line")
+    qs.semicircle(x-0.5*width, y-bandpos[centromere+1,2], width, bandpos[centromere+1,2]-bandpos[centromere+1,1], 3, col=1, plottype="line")
     # draw the centromere
     centromere.size=centromere.size*0.5*width/xinch(1)
     symbols(x, y-bandpos[centromere,2],circles=1,inches=centromere.size, add=TRUE,fg="black",bg="white")
