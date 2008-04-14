@@ -20,9 +20,6 @@
    \item{segment}{integer, length of overlapping segments}
 }
 
-\details{
-
-}
 \value{
   This function returns a vector of the same length as \code{intensities}, or a matrix
   if the length of \code{tau} is greater than 1.

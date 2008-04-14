@@ -19,8 +19,6 @@ plotChromosome(gendata, chrompos, chromosome, dataselection = NULL, ylim = NULL,
   \item{interval}{position of extra lines besides median, see \code{\link{plotSmoothed}}}
   \item{\dots}{extra arguments for \code{\link{plotSmoothed}}}
 }
-\details{
-}
 \value{
   The function is used for its side effects
 }

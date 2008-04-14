@@ -183,7 +183,7 @@ paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=
   bleacher<-function(x) { (x * (1-bleach)) + bleach}
   
   require(lodplot)
-  data(chrom.bands)
+  data(chrom.bands,"chrom.bands",package="lodplot")
   chrom<-switch(as.character(chrom),
          "98"="X",
          "99"="Y",
@@ -257,7 +257,8 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.wi
 {
   bleacher<-function(x) { (x * (1-bleach)) + bleach}
   require(grid)
-  data(chrom.bands)
+  require(lodplot)
+  data(chrom.bands,"chrom.bands",package="lodplot")
   side<-max(1,min(side,4))
   units<-match.arg(units)
   legend<-match.arg(legend)
@@ -317,7 +318,6 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.wi
       qs.grid.semicircle(bandpos[centromere + 1,2], pos.bottom, chrom.width, 
           bandpos[centromere + 1,2] - bandpos[centromere + 1,1], 
           2, default.units="native", gp=gpar(fill = bandcol[centromere+1],col=bandbord[centromere+1]))
-      #centromere.size=0.6*0.5*width/yinch(1)
       grid.circle(bandpos[centromere,2], pos.bottom+chrom.width/2, unit(chrom.width*0.3,"npc"), default.units="native", gp = gpar(col=bleachblack, fill="white", lwd=2))
       if (legend=="chrom") {
         grid.text(chrom, unit(0.5, "npc"), unit(pos.chrom,"native"), gp = gpar(cex = cex.leg))
@@ -338,7 +338,6 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.wi
       qs.grid.semicircle( pos.bottom, bandpos[centromere + 1,2],      chrom.width,
           bandpos[centromere + 1,2] - bandpos[centromere + 1,1],  
           1, default.units="native", gp=gpar(fill = bandcol[centromere+1],col=bandbord[centromere+1]))
-      #centromere.size=0.6*0.5*width/yinch(1)
       grid.circle(pos.bottom+chrom.width/2, bandpos[centromere,2],  unit(chrom.width*0.3,"npc"), default.units="native", gp = gpar(col=bleachblack, fill="white", lwd=2))
       if (legend=="chrom") {
         grid.text(chrom, unit(pos.chrom,"native"), unit(0.5, "npc"), gp = gpar(cex = cex.leg))
@@ -356,7 +355,7 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.wi
 
 lengthChromosome<-function(chrom, units=c("cM","bases","ISCN")) {
   require(lodplot)
-  data(chrom.bands)
+  data(chrom.bands,"chrom.bands",package="lodplot")
   chrom<-switch(as.character(chrom),
          "98"="X",
          "99"="Y",
@@ -371,7 +370,7 @@ lengthChromosome<-function(chrom, units=c("cM","bases","ISCN")) {
 
 position2Cytoband<-function(chrom,position,units=c("cM","bases","ISCN"),bands=c("major","minor")) {
   require(lodplot)
-  data(chrom.bands)
+  data(chrom.bands,"chrom.bands",package="lodplot")
   chrom<-switch(as.character(chrom),
          "98"="X",
          "99"="Y",

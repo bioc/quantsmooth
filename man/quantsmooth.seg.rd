@@ -20,9 +20,6 @@
    \item{nb}{integer, basis}
 }
 
-\details{
-
-}
 \value{
   This function returns a vector of the same length as \code{y}
 }

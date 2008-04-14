@@ -24,8 +24,6 @@ paintCytobands(chrom, pos = c(0, 0), units = c("cM", "bases", "ISCN"), width = 0
   \item{cex.leg}{numeric, relative size of legend text}
   \item{bleach}{numeric [0,1], proportion by which to bleach the chromosome}
 }
-\details{
-}
 \value{
   This function is executed for its side effects
 }
