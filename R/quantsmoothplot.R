@@ -170,7 +170,7 @@ qs.grid.semicircle<-function (base.x, base.y, base.length, height = base.length,
 
 #
 
-paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=0.4, length.out, bands="major", orientation=c("h","v"), legend = TRUE, cex.leg=0.7, bleach = 0) {
+paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=0.4, length.out, bands="major", orientation=c("h","v"), legend = TRUE, cex.leg=0.7, bleach = 0,...) {
   # Based on paint.chromosome from lodplot package
   # added:
   #  -bleach
@@ -217,34 +217,34 @@ paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=
     if (orientation=="h") {
       rect(pos[1]+bandpos[idx,1],pos[2],pos[1]+bandpos[idx,2],pos[2]-width, col=bandcol[idx], density=banddens[idx], border=bandbord[idx])
       qs.semicircle(pos[1]+bandpos[1,2], pos[2]-width, width,
-                 bandpos[1,2]-bandpos[1,1], 2, col=bandcol[1], density=banddens[1], border=bandbord[1])
+                 bandpos[1,2]-bandpos[1,1], 2, col=bandcol[1], density=banddens[1], border=bandbord[1],...)
       qs.semicircle(pos[1]+bandpos[n,1], pos[2]-width, width,
-                 bandpos[n,2]-bandpos[n,1], 4, col=bandcol[n], density=banddens[n], border=bandbord[n])
+                 bandpos[n,2]-bandpos[n,1], 4, col=bandcol[n], density=banddens[n], border=bandbord[n],...)
       qs.semicircle(pos[1]+bandpos[centromere,1], pos[2]-width, width,
                  bandpos[centromere,2]-bandpos[centromere,1],
-                 4, col=bandcol[centromere], density=banddens[centromere], border=bandbord[centromere])
+                 4, col=bandcol[centromere], density=banddens[centromere], border=bandbord[centromere],...)
       qs.semicircle(pos[1]+bandpos[centromere+1,2], pos[2]-width, width,
                  bandpos[centromere+1,2]-bandpos[centromere+1,1],
-                 2, col=bandcol[centromere+1], density=banddens[centromere+1], border=bandbord[centromere+1])
+                 2, col=bandcol[centromere+1], density=banddens[centromere+1], border=bandbord[centromere+1],...)
 
       centromere.size=0.6*0.5*width/yinch(1)
-      symbols(pos[1]+bandpos[centromere,2], pos[2]-0.5*width,circles=1,inches=centromere.size, add=TRUE,fg=gray(bleacher(0)),bg="white")
-      if (legend) text(pos[1]+(bandpos[,1]+bandpos[,2])/2,pos[2]+0.5*width,paste(chromdata[,"arm"],chromdata[,"band"],sep=""),adj=c(0,0.5),srt=90,cex=cex.leg)
+      symbols(pos[1]+bandpos[centromere,2], pos[2]-0.5*width,circles=1,inches=centromere.size, add=TRUE,fg=gray(bleacher(0)),bg="white",...)
+      if (legend) text(pos[1]+(bandpos[,1]+bandpos[,2])/2,pos[2]+0.5*width,paste(chromdata[,"arm"],chromdata[,"band"],sep=""),adj=c(0,0.5),srt=90,cex=cex.leg,...)
     } else {
-      rect(pos[1],pos[2]-bandpos[idx,1],pos[1]-width,pos[2]-bandpos[idx,2], col=bandcol[idx], density=banddens[idx], border=bandbord[idx])
+      rect(pos[1],pos[2]-bandpos[idx,1],pos[1]-width,pos[2]-bandpos[idx,2], col=bandcol[idx], density=banddens[idx], border=bandbord[idx],...)
       qs.semicircle(pos[1]-width, pos[2]-bandpos[1,2], width,
-                 bandpos[1,2]-bandpos[1,1], 3, col=bandcol[1], density=banddens[1], border=bandbord[1])
+                 bandpos[1,2]-bandpos[1,1], 3, col=bandcol[1], density=banddens[1], border=bandbord[1],...)
       qs.semicircle(pos[1]-width, pos[2]-bandpos[n,1], width,
-                 bandpos[n,2]-bandpos[n,1], 1, col=bandcol[n], density=banddens[n], border=bandbord[n])
+                 bandpos[n,2]-bandpos[n,1], 1, col=bandcol[n], density=banddens[n], border=bandbord[n],...)
       qs.semicircle(pos[1]-width, pos[2]-bandpos[centromere,1], width,
                  bandpos[centromere,2]-bandpos[centromere,1],
-                 1, col=bandcol[centromere], density=banddens[centromere], border=bandbord[centromere])
+                 1, col=bandcol[centromere], density=banddens[centromere], border=bandbord[centromere],...)
       qs.semicircle(pos[1]-width, pos[2]-bandpos[centromere+1,2], width,
                  bandpos[centromere+1,2]-bandpos[centromere+1,1],
-                 3, col=bandcol[centromere+1], density=banddens[centromere+1], border=bandbord[centromere+1])
+                 3, col=bandcol[centromere+1], density=banddens[centromere+1], border=bandbord[centromere+1],...)
       centromere.size=0.6*0.5*width/xinch(1)
-      symbols(pos[1]-0.5*width, pos[2]-bandpos[centromere,2],circles=1,inches=centromere.size, add=TRUE,fg=gray(bleacher(0)),bg="white")
-      if (legend) text(pos[1]+0.5*width,pos[2]-(bandpos[,1]+bandpos[,2])/2,paste(chromdata[,"arm"],chromdata[,"band"],sep=""),adj=c(0,0.5),srt=0,cex=cex.leg)
+      symbols(pos[1]-0.5*width, pos[2]-bandpos[centromere,2],circles=1,inches=centromere.size, add=TRUE,fg=gray(bleacher(0)),bg="white",...)
+      if (legend) text(pos[1]+0.5*width,pos[2]-(bandpos[,1]+bandpos[,2])/2,paste(chromdata[,"arm"],chromdata[,"band"],sep=""),adj=c(0,0.5),srt=0,cex=cex.leg,...)
     }
   } else {
     warning(paste("Chromosome",chrom,"is not plotted because cytoband data is not available"))
