@@ -9,7 +9,7 @@
 \usage{
 paintCytobands(chrom, pos = c(0, 0), units = c("cM", "bases", "ISCN"), width = 0.4,
             length.out, bands = "major", orientation = c("h","v"), legend = TRUE,
-            cex.leg = 0.7, bleach = 0)
+            cex.leg = 0.7, bleach = 0, \dots)
 }
 \arguments{
   \item{chrom}{chromosomal id, chromosome to plot 1:22,X,Y}
@@ -23,6 +23,7 @@ paintCytobands(chrom, pos = c(0, 0), units = c("cM", "bases", "ISCN"), width = 0
   \item{legend}{logical, if \code{TRUE} then the bandnames are plotted next to the chromosome}
   \item{cex.leg}{numeric, relative size of legend text}
   \item{bleach}{numeric [0,1], proportion by which to bleach the chromosome}
+  \item{\dots}{extra parameters for \code{plot}}
 }
 \value{
   This function is executed for its side effects
