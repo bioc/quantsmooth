@@ -18,8 +18,8 @@ paintCytobands(chrom, pos = c(0, 0), units = c("cM", "bases", "ISCN"), width = 0
   \item{width}{numeric, width of the chromosome, the chromosome is plotted between \code{pos[2]} and \code{pos[2]-width}}
   \item{length.out}{numeric, if given, the chromosome will have this length in the plot}
   \item{bands}{if not equal to "major", then also the minor bands will be plotted}
-  \item{orientation}{chromosome is plotted either \em{H}orizontally to the right of 
-	the starting point or \em{V}ertically down from the starting point}
+  \item{orientation}{chromosome is plotted either \emph{H}orizontally to the right of 
+	the starting point or \emph{V}ertically down from the starting point}
   \item{legend}{logical, if \code{TRUE} then the bandnames are plotted next to the chromosome}
   \item{cex.leg}{numeric, relative size of legend text}
   \item{bleach}{numeric [0,1], proportion by which to bleach the chromosome}
