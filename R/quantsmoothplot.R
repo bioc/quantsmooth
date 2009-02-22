@@ -75,8 +75,8 @@ prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0
   	axis(4, c(1:length(dwidth)), characterCHR(rightrow), las = 2)
   	if (paintCytobands && organism=="hsa") {
     	for (i in 1:length(dwidth)) {
-    	  if (lens[leftrow[i]]>0) paintCytobands(i,c(0,i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[leftrow[i]],legend=FALSE,bleach=bleach)
-    	  if (rightrow[i]!="" && lens[rightrow[i]]>0) paintCytobands(i,c(maxdwidth-lens[rightrow[i]],i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[rightrow[i]],legend=FALSE,bleach=bleach)
+    	  if (lens[leftrow[i]]>0) paintCytobands(leftrow[i],c(0,i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[leftrow[i]],legend=FALSE,bleach=bleach)
+    	  if (rightrow[i]!="" && lens[rightrow[i]]>0) paintCytobands(rightrow[i],c(maxdwidth-lens[rightrow[i]],i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[rightrow[i]],legend=FALSE,bleach=bleach)
   	  }
   	} else {
     	for (i in 1:length(dwidth)) {
