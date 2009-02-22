@@ -2,17 +2,17 @@
 \alias{lengthChromosome}
 \title{ Retrieve chromosomal length }
 \description{
-  Retrieve chromosomal length from NCBI data
+  Retrieve human chromosomal length from NCBI data
 }
 \usage{
 lengthChromosome(chrom, units = c("cM", "bases", "ISCN"))
 }
 \arguments{
-  \item{chrom}{chromosomal id, 1:22,X,Y}
+  \item{chrom}{vector of chromosomal id, 1:22,X,Y}
   \item{units}{}
 }
 \value{
-  A numeric in the requested units
+  A vector numeric in the requested units
 }
 \author{Jan Oosting}
 \examples{

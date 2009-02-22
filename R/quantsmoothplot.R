@@ -37,7 +37,7 @@ plotChromosome<-function(gendata,chrompos,chromosome,dataselection=NULL,ylim=NUL
     grid=grid,smooth.lambda=smooth.lambda,interval=interval,...)
 }
 #
-prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0,topspace=1,organism,sexChromosomes=FALSE,...) {
+prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0,topspace=1,organism,sexChromosomes=FALSE,units=c("bases","cM","ISCN"),...) {
   # prepare plot with lines and axes indicating all chromosomes
   # sends extra arguments to plot function
   cytobandWidth<-0.075
@@ -47,13 +47,18 @@ prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0
 	par(mar=c(1,4,2,3)+0.1)
 
 	if (!missing(organism)) {
+    units<-match.arg(units)
 	  organism<-match.arg(organism,c("hsa","mmu","rno"))
 	  chrom.n<-switch(organism,
 	                   hsa = 22,
                      mmu = 19,
                      rno = 20) 
   	chrs2<-factor(numericCHR(chrompos[,"CHR"]),levels=c(1:chrom.n,if(sexChromosomes)c(98,99)else NULL))
-  	lens<-sapply(split(chrompos[,"MapInfo"],chrs2),function(x)max(c(0,x)))
+  	if (organism=="hsa")
+      lens<-lengthChromosome(levels(chrs2),units=units)
+  	else
+    	lens<-sapply(split(chrompos[,"MapInfo"],chrs2),function(x)max(c(0,x)))
+  	names(lens)<-characterCHR(names(lens))
   	cols<-rep(cols,length.out=length(lens))
   	names(cols)<-names(lens)
   	dwidth<-NULL
@@ -61,17 +66,17 @@ prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0
   	for (i in 1:(chrom.n %/% 2)) dwidth[i]<-lens[i]+lens[chrom.n+1-i]
     # make sure vector length equals nr of rows in plot
   	if (chrom.n %% 2 ==1) dwidth<-c(dwidth,lens[chrom.n %/% 2 +1])
-  	if (sexChromosomes) dwidth<-c(dwidth,lens["98"]+lens["99"])
+  	if (sexChromosomes) dwidth<-c(dwidth,lens["X"]+lens["Y"])
   	maxdwidth<-max(dwidth)*1.05
-  	leftrow<-c(if(sexChromosomes)"98" else NULL,((chrom.n + 1) %/% 2):1)
-  	rightrow<-c(if(sexChromosomes)"99" else NULL, if (chrom.n %% 2 ==1) "" else NULL,((chrom.n + 1) %/% 2 +1):chrom.n)
+  	leftrow<-c(if(sexChromosomes)"X" else NULL,((chrom.n + 1) %/% 2):1)
+  	rightrow<-c(if(sexChromosomes)"Y" else NULL, if (chrom.n %% 2 ==1) "" else NULL,((chrom.n + 1) %/% 2 +1):chrom.n)
   	plot(c(0,maxdwidth),c(0.5 ,0.5+length(dwidth)+topspace),type="n",ylab="Chromosome",xlab="",axes = FALSE, las = 2,...)
   	axis(2, c(1:length(dwidth)), characterCHR(leftrow), las = 2)
   	axis(4, c(1:length(dwidth)), characterCHR(rightrow), las = 2)
   	if (paintCytobands && organism=="hsa") {
     	for (i in 1:length(dwidth)) {
     	  if (lens[leftrow[i]]>0) paintCytobands(i,c(0,i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[leftrow[i]],legend=FALSE,bleach=bleach)
-    	  if(rightrow[i]!="" && lens[rightrow[i]]>0) paintCytobands(i,c(maxdwidth-lens[rightrow[i]],i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[rightrow[i]],legend=FALSE,bleach=bleach)
+    	  if (rightrow[i]!="" && lens[rightrow[i]]>0) paintCytobands(i,c(maxdwidth-lens[rightrow[i]],i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[rightrow[i]],legend=FALSE,bleach=bleach)
   	  }
   	} else {
     	for (i in 1:length(dwidth)) {
@@ -356,15 +361,21 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.wi
 lengthChromosome<-function(chrom, units=c("cM","bases","ISCN")) {
   require(lodplot)
   data(chrom.bands,"chrom.bands",package="lodplot")
-  chrom<-switch(as.character(chrom),
-         "98"="X",
-         "99"="Y",
-         as.character(chrom))
+  chrom<-characterCHR(chrom)
   units<-match.arg(units)
-  chromdata<-subset(chrom.bands, chrom.bands$chr==chrom)
-  switch(units,cM =chromdata[nrow(chromdata),"cM.bot"],
-               bases = chromdata[nrow(chromdata),"bases.bot"],
-               ISCN =  chromdata[nrow(chromdata),"ISCN.bot"])
+  chromdata<-subset(chrom.bands, chrom.bands$chr %in% chrom)
+  if (nrow(chromdata)==0) {
+    warning("chromosomes not found in chromosomal data")
+    res=rep(NA,length(chrom))
+  }else{
+    lengthdata<-switch(units,cM =chromdata[,"cM.bot"],
+                 bases = chromdata[,"bases.bot"],
+                 ISCN =  chromdata[,"ISCN.bot"])
+    chromlengths<-aggregate(lengthdata,list(chromdata[,"chr"]),function(x) x[length(x)])
+    res<-chromlengths[match(chrom,chromlengths[,1]),2]
+  }
+  names(res)<-chrom
+  return(res)
 }
 
 
