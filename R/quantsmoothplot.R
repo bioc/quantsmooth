@@ -8,6 +8,7 @@ numericCHR<- function(CHR) {
   CHR[CHR=="X"]<-"98"
   CHR[CHR=="Y"]<-"99"
   CHR[CHR=="XY"]<-"100"
+  CHR[CHR=="MT"]<-"101"
   as.numeric(CHR)
 }
 #
@@ -16,6 +17,7 @@ characterCHR<- function(CHR) {
   CHR[CHR=="98"]<-"X"
   CHR[CHR=="99"]<-"Y"
   CHR[CHR=="100"]<-"XY"
+  CHR[CHR=="101"]<-"MT"
   CHR
 }
 #
