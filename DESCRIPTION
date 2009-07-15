@@ -8,4 +8,4 @@ Maintainer: Jan Oosting <j.oosting@lumc.nl>
 Depends: quantreg, lodplot, grid
 Description: Implements quantile smoothing as introduced in: Quantile smoothing of array CGH data; Eilers PH, de Menezes RX; Bioinformatics. 2005 Apr 1;21(7):1146-53.
 License: GPL V2
-biocViews: Visualization, DNACopyNumber
+biocViews: Visualization, CopyNumberVariants
