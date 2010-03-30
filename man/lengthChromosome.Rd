@@ -9,7 +9,7 @@ lengthChromosome(chrom, units = c("cM", "bases", "ISCN"))
 }
 \arguments{
   \item{chrom}{vector of chromosomal id, 1:22,X,Y}
-  \item{units}{}
+  \item{units}{character, one of "cM", "bases", "ISCN"}
 }
 \value{
   A vector numeric in the requested units
