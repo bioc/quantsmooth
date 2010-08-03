@@ -89,12 +89,12 @@ prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0
     # for each locus determine postion on plot , this can be used later to fill with data
   	dchrompos<-matrix(0,nrow=nrow(chrompos),ncol=2,dimnames=list(rownames(chrompos),c("CHR","MapInfo")))
  		for (i in 1:length(rightrow)) if (rightrow[i]!="") {
- 		  probes<-numericCHR(chrompos[,"CHR"])==rightrow[i]
+ 		  probes<-characterCHR(chrompos[,"CHR"])==rightrow[i]
       dchrompos[probes,2]<-chrompos[probes,"MapInfo"]+maxdwidth-lens[rightrow[i]]
       dchrompos[probes,1]<- i
     }
   	for (i in 1:length(leftrow)) {
- 		  probes<-numericCHR(chrompos[,"CHR"])==leftrow[i]
+ 		  probes<-characterCHR(chrompos[,"CHR"])==leftrow[i]
 			dchrompos[probes,2]<-chrompos[probes,"MapInfo"]
       dchrompos[probes,1]<- i
     }
