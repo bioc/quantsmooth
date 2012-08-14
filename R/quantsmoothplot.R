@@ -117,6 +117,8 @@ prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0
 #  original data available at: ftp://ftp.ncbi.nlm.nih.gov/genomes/H_sapiens/mapview/BUILD.35.1/ideogram.gz.
 qs.semicircle <- function(base.x, base.y, base.length, height=base.length, side=1, orientation=NULL,plottype="poly",...) {
   # based on lodplot package
+  # David Duffy <David.Duffy@qimr.edu.au>
+  # URL: http://www.qimr.edu.au/davidD
   # - col is now propagated through ..., other plotting parameters can now also be given
   # - different types poly/line 
   radius<-base.length/2
@@ -188,9 +190,8 @@ paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=
   #  -orientation
   #  extracted semicircle for general use
   bleacher<-function(x) { (x * (1-bleach)) + bleach}
-  
-  require(lodplot)
-  data(chrom.bands,"chrom.bands",package="lodplot")
+  chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
+  data(chrom.bands)
   chrom<-switch(as.character(chrom),
          "98"="X",
          "99"="Y",
@@ -264,8 +265,8 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.wi
 {
   bleacher<-function(x) { (x * (1-bleach)) + bleach}
   require(grid)
-  require(lodplot)
-  data(chrom.bands,"chrom.bands",package="lodplot")
+  chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
+  data(chrom.bands,"chrom.bands")
   side<-max(1,min(side,4))
   units<-match.arg(units)
   legend<-match.arg(legend)
@@ -361,8 +362,8 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.wi
 }
 
 lengthChromosome<-function(chrom, units=c("cM","bases","ISCN")) {
-  require(lodplot)
-  data(chrom.bands,"chrom.bands",package="lodplot")
+  chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
+  data(chrom.bands)
   chrom<-characterCHR(chrom)
   units<-match.arg(units)
   chromdata<-subset(chrom.bands, chrom.bands$chr %in% chrom)
@@ -382,8 +383,8 @@ lengthChromosome<-function(chrom, units=c("cM","bases","ISCN")) {
 
 
 position2Cytoband<-function(chrom,position,units=c("cM","bases","ISCN"),bands=c("major","minor")) {
-  require(lodplot)
-  data(chrom.bands,"chrom.bands",package="lodplot")
+  chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
+  data(chrom.bands)
   chrom<-switch(as.character(chrom),
          "98"="X",
          "99"="Y",
