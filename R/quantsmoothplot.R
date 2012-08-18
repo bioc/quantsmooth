@@ -191,7 +191,7 @@ paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=
   #  extracted semicircle for general use
   bleacher<-function(x) { (x * (1-bleach)) + bleach}
   chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
-  data(chrom.bands)
+  data(chrom.bands,package="quantsmooth",envir=environment())
   chrom<-switch(as.character(chrom),
          "98"="X",
          "99"="Y",
@@ -266,7 +266,7 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.wi
   bleacher<-function(x) { (x * (1-bleach)) + bleach}
   require(grid)
   chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
-  data(chrom.bands,"chrom.bands")
+  data(chrom.bands,package="quantsmooth",envir=environment())
   side<-max(1,min(side,4))
   units<-match.arg(units)
   legend<-match.arg(legend)
@@ -363,7 +363,7 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.wi
 
 lengthChromosome<-function(chrom, units=c("cM","bases","ISCN")) {
   chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
-  data(chrom.bands)
+  data(chrom.bands,package="quantsmooth",envir=environment())
   chrom<-characterCHR(chrom)
   units<-match.arg(units)
   chromdata<-subset(chrom.bands, chrom.bands$chr %in% chrom)
@@ -384,7 +384,7 @@ lengthChromosome<-function(chrom, units=c("cM","bases","ISCN")) {
 
 position2Cytoband<-function(chrom,position,units=c("cM","bases","ISCN"),bands=c("major","minor")) {
   chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
-  data(chrom.bands)
+  data(chrom.bands,package="quantsmooth",envir=environment())
   chrom<-switch(as.character(chrom),
          "98"="X",
          "99"="Y",
