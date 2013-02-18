@@ -1,10 +1,11 @@
 # Support functions for SnpSetIllumina
-numericCHR<- function(CHR) {
+numericCHR<- function(CHR, prefix="chr") {
   # Set autosomal chromosomes to their number
   # X - 98
   # Y - 99
   # XY - 100
-  CHR<-as.character(CHR)
+  
+  CHR<-sub(paste("^",prefix,sep=""),"",as.character(CHR))
   CHR[CHR=="X"]<-"98"
   CHR[CHR=="Y"]<-"99"
   CHR[CHR=="XY"]<-"100"
@@ -12,13 +13,13 @@ numericCHR<- function(CHR) {
   as.numeric(CHR)
 }
 #
-characterCHR<- function(CHR) {
+characterCHR<- function(CHR,prefix="") {
   CHR<-as.character(CHR)
   CHR[CHR=="98"]<-"X"
   CHR[CHR=="99"]<-"Y"
   CHR[CHR=="100"]<-"XY"
   CHR[CHR=="101"]<-"MT"
-  CHR
+  paste(prefix,CHR,sep="")
 }
 #
 scaleto <-function(x,fromlimits=c(0,50),tolimits=c(0.5,-0.5),adjust=TRUE) {
