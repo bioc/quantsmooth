@@ -40,7 +40,7 @@ plotChromosome<-function(gendata,chrompos,chromosome,dataselection=NULL,ylim=NUL
     grid=grid,smooth.lambda=smooth.lambda,interval=interval,...)
 }
 #
-prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0,topspace=1,organism,sexChromosomes=FALSE,units=c("bases","cM","ISCN"),...) {
+prepareGenomePlot<-function(chrompos=NULL,cols="grey50",paintCytobands=FALSE,bleach=0,topspace=1,organism,sexChromosomes=FALSE,units=c("bases","cM","ISCN"),...) {
   # prepare plot with lines and axes indicating all chromosomes
   # sends extra arguments to plot function
   cytobandWidth<-0.075
@@ -56,6 +56,13 @@ prepareGenomePlot<-function(chrompos,cols="grey50",paintCytobands=FALSE,bleach=0
 	                   hsa = 22,
                      mmu = 19,
                      rno = 20) 
+    if (is.null(chrompos)) {
+      chroms=c(1:chrom.n,if(sexChromosomes)c(98,99)else NULL)
+      chrnames=characterCHR(chroms,"chr")
+      mapinfo=rep(0,length(chroms))
+      chrompos=cbind(CHR=chroms,MapInfo=mapinfo)
+      rownames(chrompos)<-chrnames
+    }
   	chrs2<-factor(numericCHR(chrompos[,"CHR"]),levels=c(1:chrom.n,if(sexChromosomes)c(98,99)else NULL))
   	if (organism=="hsa")
       lens<-lengthChromosome(levels(chrs2),units=units)

@@ -27,6 +27,8 @@ prepareGenomePlot(chrompos, cols = "grey50", paintCytobands = FALSE, bleach = 0,
   If \code{organism} is not supplied then a single column is plotted of the available 
   chromosomes in \code{chrompos$CHR}. The arguments \code{paintCytobands}, \code{bleach},
   and \code{sexChromosomes} are not used in that case. 
+  If \code{organism} is supplied and \code{chrompos} is \code{NULL} then a result is generated 
+  with the starting Y and X position of each chromosome
 }
 \value{
   A matrix with 2 columns that contain the Y and X positions for the probes on the plot
