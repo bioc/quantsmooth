@@ -5,13 +5,13 @@
   A chromosme is drawn including the cytobands
 }
 \usage{
-grid.chromosome(chrom, side = 1, units = c("cM", "bases", "ISCN"), chrom.width = 0.5, length.out, 
+grid.chromosome(chrom, side = 1, units = "hg19", chrom.width = 0.5, length.out, 
              bands = "major", legend = c("chrom", "band", "none"), cex.leg = 0.7, bleach = 0, ...)
 }
 \arguments{
   \item{chrom}{numeric or character, id of chromosome to plot}
   \item{side}{numeric [1:4], side of rectangle to draw, 4 sides, side 2 and 4 are vertical}
-  \item{units}{character, type of unit to use}
+  \item{units}{character or data.frame, type of units for genomic data, or a dataframe with UCSC cytoband data, see \code{\link{lengthChromosome}}}
   \item{chrom.width}{numeric [0,1], The width relative to the width (sides 2 and 4) or height(sides 1 and 3) of the viewport}
   \item{length.out}{numeric, size of native units of viewport}
   \item{bands}{character, draw either major or minor bands}

@@ -1,5 +1,10 @@
 \name{chrom.bands}
 \alias{chrom.bands}
+\alias{chrom.bands.hg18}
+\alias{chrom.bands.hg19}
+\alias{chrom.bands.hg38}
+\alias{chrom.bands.mm10}
+
 \docType{data}
 \title{ Dataset of human chromosomes and their banding patterns }
 \description{

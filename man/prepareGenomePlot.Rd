@@ -6,7 +6,7 @@
 }
 \usage{
 prepareGenomePlot(chrompos, cols = "grey50", paintCytobands = FALSE, bleach = 0, topspace = 1, organism, 
-                  sexChromosomes = FALSE, units = c("bases", "cM", "ISCN"),...)
+                  sexChromosomes = FALSE, units = "hg19",...)
 }
 
 \arguments{
@@ -20,7 +20,7 @@ prepareGenomePlot(chrompos, cols = "grey50", paintCytobands = FALSE, bleach = 0,
   \item{organism}{character, if given a 2 column plot is created with the chromosomes 
                    for the given species. Currently "hsa", "mmu", and "rno" are supported}
   \item{sexChromosomes}{logical, if \code{TRUE} then also the sex chromosomes X and Y are plotted}
-  \item{units}{character, type of units for genomic data}
+  \item{units}{characterr or data.frame, type of units for genomic data, or a dataframe with UCSC cytoband data, see \code{\link{lengthChromosome}}}
   \item{\dots}{extra arguments for \code{plot} function}
 }
 \details{

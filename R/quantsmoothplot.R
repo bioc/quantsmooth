@@ -5,11 +5,12 @@ numericCHR<- function(CHR, prefix="chr") {
   # Y - 99
   # XY - 100
   
-  CHR<-sub(paste("^",prefix,sep=""),"",as.character(CHR))
+  CHR<-sub(paste0("^",prefix),"",as.character(CHR))
+  CHR[grep("_",CHR)]<-"102"
   CHR[CHR=="X"]<-"98"
   CHR[CHR=="Y"]<-"99"
   CHR[CHR=="XY"]<-"100"
-  CHR[CHR=="MT"]<-"101"
+  CHR[CHR %in% c("M","MT")]<-"101"
   as.numeric(CHR)
 }
 #
@@ -33,14 +34,47 @@ scaleto <-function(x,fromlimits=c(0,50),tolimits=c(0.5,-0.5),adjust=TRUE) {
   x+tolimits[1]
 }  
 #
+.getChrombands<-function(units) {
+  if (units %in% c("cM","bases","ISCN")) {
+    chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
+    data(chrom.bands,package="quantsmooth",envir=environment())
+    bandpos<-switch(units,
+                    cM =chrom.bands[,c("cM.top","cM.bot")],
+                    bases = chrom.bands[,c("bases.top","bases.bot")],
+                    ISCN =  chrom.bands[,c("ISCN.top","ISCN.bot")])
+    data.frame(chr=chrom.bands$chr,segstart=bandpos[,1],segend=bandpos[,2],stain=chrom.bands$stain,band=chrom.bands$band,arm=chrom.bands$arm, stringsAsFactors=FALSE)
+  } else {
+    data(list=paste0("chrom.bands.",units),package="quantsmooth",envir=environment())
+    .convertUCSCcytoband(get(paste0("chrom.bands.",units)))
+  }
+}
+.getChrombands<-function(units) {
+  if (units %in% c("cM","bases","ISCN")) {
+    chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
+    data(chrom.bands,package="quantsmooth",envir=environment())
+    bandpos<-switch(units,
+                    cM =chrom.bands[,c("cM.top","cM.bot")],
+                    bases = chrom.bands[,c("bases.top","bases.bot")],
+                    ISCN =  chrom.bands[,c("ISCN.top","ISCN.bot")])
+    data.frame(chr=chrom.bands$chr,segstart=bandpos[,1],segend=bandpos[,2],stain=chrom.bands$stain,band=chrom.bands$band,arm=chrom.bands$arm, stringsAsFactors=FALSE)
+  } else {
+    data(list=paste0("chrom.bands.",units),package="quantsmooth",envir=environment())
+    .convertUCSCcytoband(get(paste0("chrom.bands.",units)))
+  }
+}
+#
+.convertUCSCcytoband<- function(ucscdata) {
+  data.frame(chr=numericCHR(ucscdata[,1]),segstart=ucscdata[,2],segend=ucscdata[,3],stain=ucscdata[,5],band=substring(ucscdata[,4],2),arm=substring(ucscdata[,4],1,1), stringsAsFactors=FALSE)
+}
+#
 plotChromosome<-function(gendata,chrompos,chromosome,dataselection=NULL,ylim=NULL,normalized.to=NULL,grid=NULL,smooth.lambda=2,interval=0.5,...) {
   # uses gcsmoothing.R
   if (is.null(dataselection)) dataselection<-rep(TRUE,ncol(gendata))
   plotSmoothed(gendata[chrompos[,"CHR"]==chromosome,dataselection],chrompos[chrompos[,"CHR"]==chromosome,"MapInfo"],ylim=ylim,normalized.to=normalized.to,
-    grid=grid,smooth.lambda=smooth.lambda,interval=interval,...)
+               grid=grid,smooth.lambda=smooth.lambda,interval=interval,...)
 }
 #
-prepareGenomePlot<-function(chrompos=NULL,cols="grey50",paintCytobands=FALSE,bleach=0,topspace=1,organism,sexChromosomes=FALSE,units=c("bases","cM","ISCN"),...) {
+prepareGenomePlot<-function(chrompos=NULL,cols="grey50",paintCytobands=FALSE,bleach=0,topspace=1,organism,sexChromosomes=FALSE,units="hg19",...) {
   # prepare plot with lines and axes indicating all chromosomes
   # sends extra arguments to plot function
   cytobandWidth<-0.075
@@ -50,7 +84,6 @@ prepareGenomePlot<-function(chrompos=NULL,cols="grey50",paintCytobands=FALSE,ble
 	par(mar=c(1,4,2,3)+0.1)
 
 	if (!missing(organism)) {
-    units<-match.arg(units)
 	  organism<-match.arg(organism,c("hsa","mmu","rno"))
 	  chrom.n<-switch(organism,
 	                   hsa = 22,
@@ -85,7 +118,7 @@ prepareGenomePlot<-function(chrompos=NULL,cols="grey50",paintCytobands=FALSE,ble
   	axis(4, c(1:length(dwidth)), characterCHR(rightrow), las = 2)
   	if (paintCytobands && organism=="hsa") {
     	for (i in 1:length(dwidth)) {
-    	  if (lens[leftrow[i]]>0) paintCytobands(leftrow[i],c(0,i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[leftrow[i]],legend=FALSE,bleach=bleach)
+    	  if (lens[leftrow[i]]>0) paintCytobands(leftrow[i],c(0,i+cytobandWidth/2),units,width=cytobandWidth,length.out=lens[leftrow[i]],legend=FALSE,bleach=bleach)
     	  if (rightrow[i]!="" && lens[rightrow[i]]>0) paintCytobands(rightrow[i],c(maxdwidth-lens[rightrow[i]],i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[rightrow[i]],legend=FALSE,bleach=bleach)
   	  }
   	} else {
@@ -186,8 +219,7 @@ qs.grid.semicircle<-function (base.x, base.y, base.length, height = base.length,
 }
 
 #
-
-paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=0.4, length.out, bands="major", orientation=c("h","v"), legend = TRUE, cex.leg=0.7, bleach = 0,...) {
+paintCytobands<-function(chrom, pos=c(0,0), units="hg19", width=0.4, length.out, bands="major", orientation=c("h","v"), legend = TRUE, cex.leg=0.7, bleach = 0,...) {
   # Based on paint.chromosome from lodplot package
   # added:
   #  -bleach
@@ -198,32 +230,31 @@ paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=
   #  -orientation
   #  extracted semicircle for general use
   bleacher<-function(x) { (x * (1-bleach)) + bleach}
-  chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
-  data(chrom.bands,package="quantsmooth",envir=environment())
+  if (class(units)=="data.frame") {
+    chrombands<-.convertUCSCcytoband(units)
+  } else{
+    chrombands<-.getChrombands(units)
+  }
   chrom<-switch(as.character(chrom),
          "98"="X",
          "99"="Y",
          as.character(chrom))
-  units<-match.arg(units)
   orientation<-match.arg(orientation)
   # original function only required ypos
   if (length(pos)==1) pos<-c(0,pos)
-  chromdata<-subset(chrom.bands, chrom.bands$chr==chrom)
+  chromdata<-subset(chrombands, chrombands$chr==chrom)
   if (nrow(chromdata)>0){
     lc<-nchar(chromdata$band)
     sel<-!(substr(chromdata$band,lc,lc) %in% letters)
     if (bands!="major") sel<-!sel
     chromdata<-chromdata[sel,]
     rm(lc,sel)
-    bandpos<-switch(units,
-           cM =chromdata[,c("cM.top","cM.bot")],
-           bases = chromdata[,c("bases.top","bases.bot")],
-           ISCN =  chromdata[,c("ISCN.top","ISCN.bot")])
 
-    type.b<-match(chromdata$stain,c("acen","gneg", "gpos", "gvar", "stalk"))
-    bandcol<-gray(bleacher(c(0.5,1,0.2,0.6,0.75)))[type.b]
-    banddens<-c(30,-1,-1,-1,10)[type.b]
-    bandbord<-gray(bleacher(c(0,0,0,0,1)))[type.b]
+    type.b<-match(chromdata$stain,c("acen","gneg", "gpos", "gvar", "stalk","gpos25","gpos50","gpos75","gpos100"))
+    bandpos<-chromdata[,c("segstart","segend")]
+    bandcol<-gray(bleacher(c(0.5,1,0.2,0.6,0.75,0.7,0.5,0.3,0.1)))[type.b]
+    banddens<-c(30,-1,-1,-1,10,-1,-1,-1,-1)[type.b]
+    bandbord<-gray(bleacher(c(0,0,0,0,1,0,0,0,0)))[type.b]
     if (!missing(length.out)) {
       bandpos<-(bandpos/max(bandpos))*length.out
     }
@@ -267,16 +298,17 @@ paintCytobands<-function(chrom, pos=c(0,0), units=c("cM","bases","ISCN"), width=
   }
 }
 
-grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.width=0.5, length.out, 
+grid.chromosome<-function (chrom, side=1, units="hg19", chrom.width=0.5, length.out, 
                            bands="major", legend = c("chrom","band","none"), cex.leg=0.7, 
                            bleach = 0, ...)
 {
   bleacher<-function(x) { (x * (1-bleach)) + bleach}
-  require(grid)
-  chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
-  data(chrom.bands,package="quantsmooth",envir=environment())
+  if (class(units)=="data.frame") {
+    chrombands<-.convertUCSCcytoband(units)
+  } else{
+    chrombands<-.getChrombands(units)
+  }
   side<-max(1,min(side,4))
-  units<-match.arg(units)
   legend<-match.arg(legend)
   chrom<-switch(as.character(chrom),
          "98"="X",
@@ -284,7 +316,7 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.wi
          as.character(chrom))
     #if (new)
     #    grid.newpage()
-  chromdata <- subset(chrom.bands, chrom.bands$chr == chrom)
+  chromdata <- subset(chrombands, chrombands$chr == chrom)
   if (nrow(chromdata)>0){
     lc <- nchar(chromdata$band)
     sel <- !(substr(chromdata$band, lc, lc) %in% letters)
@@ -292,15 +324,11 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.wi
         sel <- !sel
     chromdata <- chromdata[sel, ]
     rm(lc, sel)
-    bandpos<-switch(units,
-           cM =chromdata[,c("cM.top","cM.bot")],
-           bases = chromdata[,c("bases.top","bases.bot")],
-           ISCN =  chromdata[,c("ISCN.top","ISCN.bot")])
-
-    type.b<-match(chromdata$stain,c("acen","gneg", "gpos", "gvar", "stalk"))
-    bandcol<-gray(bleacher(c(0.5,1,0.2,0.6,0.75)))[type.b]
-    banddens<-c(30,-1,-1,-1,10)[type.b]
-    bandbord<-gray(bleacher(c(0,0,0,0,1)))[type.b]
+    type.b<-match(chromdata$stain,c("acen","gneg", "gpos", "gvar", "stalk","gpos25","gpos50","gpos75","gpos100"))
+    bandpos<-chromdata[,c("segstart","segend")]
+    bandcol<-gray(bleacher(c(0.5,1,0.2,0.6,0.75,0.7,0.5,0.3,0.1)))[type.b]
+    banddens<-c(30,-1,-1,-1,10,-1,-1,-1,-1)[type.b]
+    bandbord<-gray(bleacher(c(0,0,0,0,1,0,0,0,0)))[type.b]
     if (!missing(length.out)) {
       bandpos<-(bandpos/max(bandpos))*length.out
     }
@@ -369,20 +397,19 @@ grid.chromosome<-function (chrom, side=1, units=c("cM","bases","ISCN"), chrom.wi
   }
 }
 
-lengthChromosome<-function(chrom, units=c("cM","bases","ISCN")) {
-  chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
-  data(chrom.bands,package="quantsmooth",envir=environment())
+lengthChromosome<-function(chrom, units="hg19") {
+  if (class(units)=="data.frame") {
+    chrombands<-.convertUCSCcytoband(units)
+  } else{
+    chrombands<-.getChrombands(units)
+  }
   chrom<-characterCHR(chrom)
-  units<-match.arg(units)
-  chromdata<-subset(chrom.bands, chrom.bands$chr %in% chrom)
+  chromdata<-subset(chrombands, chrombands$chr %in% chrom)
   if (nrow(chromdata)==0) {
     warning("chromosomes not found in chromosomal data")
     res=rep(NA,length(chrom))
   }else{
-    lengthdata<-switch(units,cM =chromdata[,"cM.bot"],
-                 bases = chromdata[,"bases.bot"],
-                 ISCN =  chromdata[,"ISCN.bot"])
-    chromlengths<-aggregate(lengthdata,list(chromdata[,"chr"]),function(x) x[length(x)])
+    chromlengths<-aggregate(chromdata$segend,list(chromdata$chr),function(x) x[length(x)])
     res<-chromlengths[match(chrom,chromlengths[,1]),2]
   }
   names(res)<-chrom
@@ -390,16 +417,18 @@ lengthChromosome<-function(chrom, units=c("cM","bases","ISCN")) {
 }
 
 
-position2Cytoband<-function(chrom,position,units=c("cM","bases","ISCN"),bands=c("major","minor")) {
-  chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
-  data(chrom.bands,package="quantsmooth",envir=environment())
+position2Cytoband<-function(chrom,position,units="hg19",bands=c("major","minor")) {
+  if (class(units)=="data.frame") {
+    chrombands<-.convertUCSCcytoband(units)
+  } else{
+    chrombands<-.getChrombands(units)
+  }
   chrom<-switch(as.character(chrom),
          "98"="X",
          "99"="Y",
          as.character(chrom))
-  units<-match.arg(units)
   bands<-match.arg(bands)
-  chromdata<-subset(chrom.bands, chrom.bands$chr==chrom)
+  chromdata<-subset(chrombands, chrombands$chr==chrom)
   if (nrow(chromdata)==0) stop("invalid chromosome:",chrom)
   lc<-nchar(chromdata$band)
   sel<-!(substr(chromdata$band,lc,lc) %in% letters)
@@ -407,17 +436,13 @@ position2Cytoband<-function(chrom,position,units=c("cM","bases","ISCN"),bands=c(
     sel<-!sel
   chromdata<-chromdata[sel,]
   rm(lc,sel)
-  positions<-switch(units,
-           cM =chromdata[,c("cM.top","cM.bot")],
-           bases = chromdata[,c("bases.top","bases.bot")],
-           ISCN =  chromdata[,c("ISCN.top","ISCN.bot")])
   res<-NULL
   for (pos1 in position) {         
-    cb<-which(pos1>=positions[,1] & pos1<=positions[,2])
+    cb<-which(pos1>=chromdata$segstart & pos1<=chromdata$segend)
     if (length(cb)>0)         
-      res<-c(res,paste(chromdata[cb,1:3],collapse=""))
+      res<-c(res,paste(chromdata[cb,c(1,6,5)],collapse=""))
     else {
-      warning("Position ",pos1," not valid for chromosome ",chrom,". It should be between ",positions[1,1]," and ",positions[nrow(positions),2])
+      warning("Position ",pos1," not valid for chromosome ",chrom,". It should be between ",chromdata$segstart[1]," and ",chromdata$segend[nrow(chromdata)])
       res<-c(res,"-")
     }
   }

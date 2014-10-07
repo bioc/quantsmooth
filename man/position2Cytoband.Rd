@@ -5,7 +5,7 @@
    Determine cytoband position based on location of probe
 }
 \usage{
-position2Cytoband(chrom, position, units = c("cM", "bases", "ISCN"), bands = c("major", "minor"))
+position2Cytoband(chrom, position, units = "hg19", bands = c("major", "minor"))
 }
 
 \arguments{

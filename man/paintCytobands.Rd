@@ -7,14 +7,14 @@
   Adapted from the paint.chromosome function in the lodplot package by David L Duffy 
 }
 \usage{
-paintCytobands(chrom, pos = c(0, 0), units = c("cM", "bases", "ISCN"), width = 0.4,
+paintCytobands(chrom, pos = c(0, 0), units = "hg19", width = 0.4,
             length.out, bands = "major", orientation = c("h","v"), legend = TRUE,
             cex.leg = 0.7, bleach = 0, \dots)
 }
 \arguments{
   \item{chrom}{chromosomal id, chromosome to plot 1:22,X,Y}
   \item{pos}{numeric vector of length 2, position in the plot to start the plot}
-  \item{units}{units along which to plot the chromosome}
+  \item{units}{character or data.frame, type of units for genomic data, or a dataframe with UCSC cytoband data, see \code{\link{lengthChromosome}}}
   \item{width}{numeric, width of the chromosome, the chromosome is plotted between \code{pos[2]} and \code{pos[2]-width}}
   \item{length.out}{numeric, if given, the chromosome will have this length in the plot}
   \item{bands}{if not equal to "major", then also the minor bands will be plotted}
