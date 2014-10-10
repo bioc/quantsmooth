@@ -4,7 +4,8 @@ numericCHR<- function(CHR, prefix="chr") {
   # X - 98
   # Y - 99
   # XY - 100
-  
+  # MT, M - 101
+  # Variable regions - 102
   CHR<-sub(paste0("^",prefix),"",as.character(CHR))
   CHR[grep("_",CHR)]<-"102"
   CHR[CHR=="X"]<-"98"
@@ -20,6 +21,7 @@ characterCHR<- function(CHR,prefix="") {
   CHR[CHR=="99"]<-"Y"
   CHR[CHR=="100"]<-"XY"
   CHR[CHR=="101"]<-"MT"
+  CHR[CHR=="102"]<-"-" 
   paste(prefix,CHR,sep="")
 }
 #
@@ -48,23 +50,9 @@ scaleto <-function(x,fromlimits=c(0,50),tolimits=c(0.5,-0.5),adjust=TRUE) {
     .convertUCSCcytoband(get(paste0("chrom.bands.",units)))
   }
 }
-.getChrombands<-function(units) {
-  if (units %in% c("cM","bases","ISCN")) {
-    chrom.bands<-NULL;rm(chrom.bands) # trick to satisfy R check
-    data(chrom.bands,package="quantsmooth",envir=environment())
-    bandpos<-switch(units,
-                    cM =chrom.bands[,c("cM.top","cM.bot")],
-                    bases = chrom.bands[,c("bases.top","bases.bot")],
-                    ISCN =  chrom.bands[,c("ISCN.top","ISCN.bot")])
-    data.frame(chr=chrom.bands$chr,segstart=bandpos[,1],segend=bandpos[,2],stain=chrom.bands$stain,band=chrom.bands$band,arm=chrom.bands$arm, stringsAsFactors=FALSE)
-  } else {
-    data(list=paste0("chrom.bands.",units),package="quantsmooth",envir=environment())
-    .convertUCSCcytoband(get(paste0("chrom.bands.",units)))
-  }
-}
 #
 .convertUCSCcytoband<- function(ucscdata) {
-  data.frame(chr=numericCHR(ucscdata[,1]),segstart=ucscdata[,2],segend=ucscdata[,3],stain=ucscdata[,5],band=substring(ucscdata[,4],2),arm=substring(ucscdata[,4],1,1), stringsAsFactors=FALSE)
+  data.frame(chr=characterCHR(numericCHR(ucscdata[,1])),segstart=ucscdata[,2],segend=ucscdata[,3],stain=ucscdata[,5],band=substring(ucscdata[,4],2),arm=substring(ucscdata[,4],1,1), stringsAsFactors=FALSE)
 }
 #
 plotChromosome<-function(gendata,chrompos,chromosome,dataselection=NULL,ylim=NULL,normalized.to=NULL,grid=NULL,smooth.lambda=2,interval=0.5,...) {
