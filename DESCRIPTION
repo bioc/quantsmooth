@@ -1,7 +1,7 @@
 Package: quantsmooth
 Type: Package
 Title: Quantile smoothing and genomic visualization of array data
-Version: 1.31.1
+Version: 1.32.0
 Date: 2014-10-07
 Author: Jan Oosting, Paul Eilers, Renee Menezes
 Maintainer: Jan Oosting <j.oosting@lumc.nl>
