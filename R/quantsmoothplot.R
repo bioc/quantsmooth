@@ -85,7 +85,7 @@ prepareGenomePlot<-function(chrompos=NULL,cols="grey50",paintCytobands=FALSE,ble
       rownames(chrompos)<-chrnames
     }
   	chrs2<-factor(numericCHR(chrompos[,"CHR"]),levels=c(1:chrom.n,if(sexChromosomes)c(98,99)else NULL))
-  	if (organism=="hsa")
+  	if (organism %in% c("hsa","mmu"))
       lens<-lengthChromosome(levels(chrs2),units=units)
   	else
     	lens<-sapply(split(chrompos[,"MapInfo"],chrs2),function(x)max(c(0,x)))
@@ -104,10 +104,10 @@ prepareGenomePlot<-function(chrompos=NULL,cols="grey50",paintCytobands=FALSE,ble
   	plot(c(0,maxdwidth),c(0.5 ,0.5+length(dwidth)+topspace),type="n",ylab="Chromosome",xlab="",axes = FALSE, las = 2,...)
   	axis(2, c(1:length(dwidth)), characterCHR(leftrow), las = 2)
   	axis(4, c(1:length(dwidth)), characterCHR(rightrow), las = 2)
-  	if (paintCytobands && organism=="hsa") {
+  	if (paintCytobands && organism %in% c("hsa","mmu")) {
     	for (i in 1:length(dwidth)) {
-    	  if (lens[leftrow[i]]>0) paintCytobands(leftrow[i],c(0,i+cytobandWidth/2),units,width=cytobandWidth,length.out=lens[leftrow[i]],legend=FALSE,bleach=bleach)
-    	  if (rightrow[i]!="" && lens[rightrow[i]]>0) paintCytobands(rightrow[i],c(maxdwidth-lens[rightrow[i]],i+cytobandWidth/2),"bases",width=cytobandWidth,length.out=lens[rightrow[i]],legend=FALSE,bleach=bleach)
+    	  if (lens[leftrow[i]]>0) paintCytobands(leftrow[i],c(0,i+cytobandWidth/2),units=units,width=cytobandWidth,length.out=lens[leftrow[i]],legend=FALSE,bleach=bleach)
+    	  if (rightrow[i]!="" && lens[rightrow[i]]>0) paintCytobands(rightrow[i],c(maxdwidth-lens[rightrow[i]],i+cytobandWidth/2),units=units,width=cytobandWidth,length.out=lens[rightrow[i]],legend=FALSE,bleach=bleach)
   	  }
   	} else {
     	for (i in 1:length(dwidth)) {
@@ -238,32 +238,38 @@ paintCytobands<-function(chrom, pos=c(0,0), units="hg19", width=0.4, length.out,
     chromdata<-chromdata[sel,]
     rm(lc,sel)
 
-    type.b<-match(chromdata$stain,c("acen","gneg", "gpos", "gvar", "stalk","gpos25","gpos50","gpos75","gpos100"))
+    type.b<-match(chromdata$stain,c("acen","gneg", "gpos", "gvar", "stalk","gpos25","gpos50","gpos75","gpos100","gpos33", "gpos66"))
     bandpos<-chromdata[,c("segstart","segend")]
-    bandcol<-gray(bleacher(c(0.5,1,0.2,0.6,0.75,0.7,0.5,0.3,0.1)))[type.b]
-    banddens<-c(30,-1,-1,-1,10,-1,-1,-1,-1)[type.b]
-    bandbord<-gray(bleacher(c(0,0,0,0,1,0,0,0,0)))[type.b]
+    bandcol<-gray(bleacher(c(0.5,1,0.2,0.6,0.75,0.7,0.5,0.3,0.1,0.6,0.4)))[type.b]
+    banddens<-c(30,-1,-1,-1,10,-1,-1,-1,-1,-1,-1)[type.b]
+    bandbord<-gray(bleacher(c(0,0,0,0,1,0,0,0,0,0,0)))[type.b]
     if (!missing(length.out)) {
       bandpos<-(bandpos/max(bandpos))*length.out
     }
     n<-nrow(chromdata)
     centromere<-which(chromdata$arm[-n]!=chromdata$arm[-1])
-    idx<-c(2:(centromere-1), (centromere+2):(n-1))
+    if (length(centromere==1)) {
+      idx<-c(2:(centromere-1), (centromere+2):(n-1))
+    } else {
+      idx<-c(2:(n-1))
+    }
     if (orientation=="h") {
       rect(pos[1]+bandpos[idx,1],pos[2],pos[1]+bandpos[idx,2],pos[2]-width, col=bandcol[idx], density=banddens[idx], border=bandbord[idx])
       qs.semicircle(pos[1]+bandpos[1,2], pos[2]-width, width,
                  bandpos[1,2]-bandpos[1,1], 2, col=bandcol[1], density=banddens[1], border=bandbord[1],...)
       qs.semicircle(pos[1]+bandpos[n,1], pos[2]-width, width,
                  bandpos[n,2]-bandpos[n,1], 4, col=bandcol[n], density=banddens[n], border=bandbord[n],...)
-      qs.semicircle(pos[1]+bandpos[centromere,1], pos[2]-width, width,
-                 bandpos[centromere,2]-bandpos[centromere,1],
-                 4, col=bandcol[centromere], density=banddens[centromere], border=bandbord[centromere],...)
-      qs.semicircle(pos[1]+bandpos[centromere+1,2], pos[2]-width, width,
-                 bandpos[centromere+1,2]-bandpos[centromere+1,1],
-                 2, col=bandcol[centromere+1], density=banddens[centromere+1], border=bandbord[centromere+1],...)
-
-      centromere.size=0.6*0.5*width/yinch(1)
+      if (length(centromere==1)) {
+        qs.semicircle(pos[1]+bandpos[centromere,1], pos[2]-width, width,
+                   bandpos[centromere,2]-bandpos[centromere,1],
+                   4, col=bandcol[centromere], density=banddens[centromere], border=bandbord[centromere],...)
+        qs.semicircle(pos[1]+bandpos[centromere+1,2], pos[2]-width, width,
+                   bandpos[centromere+1,2]-bandpos[centromere+1,1],
+                   2, col=bandcol[centromere+1], density=banddens[centromere+1], border=bandbord[centromere+1],...)
+  
+        centromere.size=0.6*0.5*width/yinch(1)
       symbols(pos[1]+bandpos[centromere,2], pos[2]-0.5*width,circles=1,inches=centromere.size, add=TRUE,fg=gray(bleacher(0)),bg="white",...)
+      }
       if (legend) text(pos[1]+(bandpos[,1]+bandpos[,2])/2,pos[2]+0.5*width,paste(chromdata[,"arm"],chromdata[,"band"],sep=""),adj=c(0,0.5),srt=90,cex=cex.leg,...)
     } else {
       rect(pos[1],pos[2]-bandpos[idx,1],pos[1]-width,pos[2]-bandpos[idx,2], col=bandcol[idx], density=banddens[idx], border=bandbord[idx],...)
@@ -271,14 +277,16 @@ paintCytobands<-function(chrom, pos=c(0,0), units="hg19", width=0.4, length.out,
                  bandpos[1,2]-bandpos[1,1], 3, col=bandcol[1], density=banddens[1], border=bandbord[1],...)
       qs.semicircle(pos[1]-width, pos[2]-bandpos[n,1], width,
                  bandpos[n,2]-bandpos[n,1], 1, col=bandcol[n], density=banddens[n], border=bandbord[n],...)
-      qs.semicircle(pos[1]-width, pos[2]-bandpos[centromere,1], width,
-                 bandpos[centromere,2]-bandpos[centromere,1],
-                 1, col=bandcol[centromere], density=banddens[centromere], border=bandbord[centromere],...)
-      qs.semicircle(pos[1]-width, pos[2]-bandpos[centromere+1,2], width,
-                 bandpos[centromere+1,2]-bandpos[centromere+1,1],
-                 3, col=bandcol[centromere+1], density=banddens[centromere+1], border=bandbord[centromere+1],...)
-      centromere.size=0.6*0.5*width/xinch(1)
-      symbols(pos[1]-0.5*width, pos[2]-bandpos[centromere,2],circles=1,inches=centromere.size, add=TRUE,fg=gray(bleacher(0)),bg="white",...)
+      if (length(centromere==1)) {
+        qs.semicircle(pos[1]-width, pos[2]-bandpos[centromere,1], width,
+                   bandpos[centromere,2]-bandpos[centromere,1],
+                   1, col=bandcol[centromere], density=banddens[centromere], border=bandbord[centromere],...)
+        qs.semicircle(pos[1]-width, pos[2]-bandpos[centromere+1,2], width,
+                   bandpos[centromere+1,2]-bandpos[centromere+1,1],
+                   3, col=bandcol[centromere+1], density=banddens[centromere+1], border=bandbord[centromere+1],...)
+        centromere.size=0.6*0.5*width/xinch(1)
+        symbols(pos[1]-0.5*width, pos[2]-bandpos[centromere,2],circles=1,inches=centromere.size, add=TRUE,fg=gray(bleacher(0)),bg="white",...)
+      }
       if (legend) text(pos[1]+0.5*width,pos[2]-(bandpos[,1]+bandpos[,2])/2,paste(chromdata[,"arm"],chromdata[,"band"],sep=""),adj=c(0,0.5),srt=0,cex=cex.leg,...)
     }
   } else {
@@ -312,17 +320,21 @@ grid.chromosome<-function (chrom, side=1, units="hg19", chrom.width=0.5, length.
         sel <- !sel
     chromdata <- chromdata[sel, ]
     rm(lc, sel)
-    type.b<-match(chromdata$stain,c("acen","gneg", "gpos", "gvar", "stalk","gpos25","gpos50","gpos75","gpos100"))
+    type.b<-match(chromdata$stain,c("acen","gneg", "gpos", "gvar", "stalk","gpos25","gpos50","gpos75","gpos100","gpos33", "gpos66"))
     bandpos<-chromdata[,c("segstart","segend")]
-    bandcol<-gray(bleacher(c(0.5,1,0.2,0.6,0.75,0.7,0.5,0.3,0.1)))[type.b]
-    banddens<-c(30,-1,-1,-1,10,-1,-1,-1,-1)[type.b]
-    bandbord<-gray(bleacher(c(0,0,0,0,1,0,0,0,0)))[type.b]
+    bandcol<-gray(bleacher(c(0.5,1,0.2,0.6,0.75,0.7,0.5,0.3,0.1,0.6,0.4)))[type.b]
+    banddens<-c(30,-1,-1,-1,10,-1,-1,-1,-1,-1,-1)[type.b]
+    bandbord<-gray(bleacher(c(0,0,0,0,1,0,0,0,0,0,0)))[type.b]
     if (!missing(length.out)) {
       bandpos<-(bandpos/max(bandpos))*length.out
     }
     n<-nrow(chromdata)
     centromere<-which(chromdata$arm[-n]!=chromdata$arm[-1])
-    idx<-c(2:(centromere-1), (centromere+2):(n-1))
+    if (length(centromere==1)) {
+      idx<-c(2:(centromere-1), (centromere+2):(n-1))
+    } else {
+      idx<-c(2:(n-1))
+    }
     if (side %in% 1:2) {
       pos.bottom<-0
       pos.top<-chrom.width
@@ -344,13 +356,17 @@ grid.chromosome<-function (chrom, side=1, units="hg19", chrom.width=0.5, length.
           bandpos[1,2] - bandpos[1,1], 2, default.units="native", gp=gpar(fill = bandcol[1],col=bandbord[1]))
       qs.grid.semicircle(bandpos[n,1], pos.bottom, chrom.width,
           bandpos[n,2] - bandpos[n,1], 4, default.units="native", gp=gpar(fill = bandcol[n],col=bandbord[n]))
-      qs.grid.semicircle(bandpos[centromere,1], pos.bottom, chrom.width, 
-          bandpos[centromere,2] - bandpos[centromere,1],
-          4, default.units="native", gp=gpar(fill = bandcol[centromere],col=bandbord[centromere]))
-      qs.grid.semicircle(bandpos[centromere + 1,2], pos.bottom, chrom.width, 
-          bandpos[centromere + 1,2] - bandpos[centromere + 1,1], 
-          2, default.units="native", gp=gpar(fill = bandcol[centromere+1],col=bandbord[centromere+1]))
-      grid.circle(bandpos[centromere,2], pos.bottom+chrom.width/2, unit(chrom.width*0.3,"npc"), default.units="native", gp = gpar(col=bleachblack, fill="white", lwd=2))
+      if (length(centromere==1)) {
+        qs.grid.semicircle(bandpos[centromere,1], pos.bottom, chrom.width, 
+            bandpos[centromere,2] - bandpos[centromere,1],
+            4, default.units="native", gp=gpar(fill = bandcol[centromere],col=bandbord[centromere]))
+        qs.grid.semicircle(bandpos[centromere + 1,2], pos.bottom, chrom.width, 
+            bandpos[centromere + 1,2] - bandpos[centromere + 1,1], 
+            2, default.units="native", gp=gpar(fill = bandcol[centromere+1],col=bandbord[centromere+1]))
+        grid.circle(bandpos[centromere,2], pos.bottom+chrom.width/2, unit(chrom.width*0.3,"npc"), default.units="native", gp = gpar(col=bleachblack, fill="white", lwd=2))
+      }
+      
+      
       if (legend=="chrom") {
         grid.text(chrom, unit(0.5, "npc"), unit(pos.chrom,"native"), gp = gpar(cex = cex.leg))
       } else if (legend=="band") {
@@ -364,13 +380,15 @@ grid.chromosome<-function (chrom, side=1, units="hg19", chrom.width=0.5, length.
           bandpos[1,2] - bandpos[1,1],  1, default.units="native", gp=gpar(fill = bandcol[1],col=bandbord[1]))
       qs.grid.semicircle( pos.bottom, bandpos[n,1], chrom.width,
           bandpos[n,2] - bandpos[n,1], 3, default.units="native", gp=gpar(fill = bandcol[n],col=bandbord[n]))
-      qs.grid.semicircle( pos.bottom, bandpos[centromere,1],  chrom.width,
-          bandpos[centromere,2] - bandpos[centromere,1], 
-          3, default.units="native", gp=gpar(fill = bandcol[centromere],col=bandbord[centromere]))
-      qs.grid.semicircle( pos.bottom, bandpos[centromere + 1,2],      chrom.width,
-          bandpos[centromere + 1,2] - bandpos[centromere + 1,1],  
-          1, default.units="native", gp=gpar(fill = bandcol[centromere+1],col=bandbord[centromere+1]))
-      grid.circle(pos.bottom+chrom.width/2, bandpos[centromere,2],  unit(chrom.width*0.3,"npc"), default.units="native", gp = gpar(col=bleachblack, fill="white", lwd=2))
+      if (length(centromere==1)) {
+        qs.grid.semicircle( pos.bottom, bandpos[centromere,1],  chrom.width,
+            bandpos[centromere,2] - bandpos[centromere,1], 
+            3, default.units="native", gp=gpar(fill = bandcol[centromere],col=bandbord[centromere]))
+        qs.grid.semicircle( pos.bottom, bandpos[centromere + 1,2],      chrom.width,
+            bandpos[centromere + 1,2] - bandpos[centromere + 1,1],  
+            1, default.units="native", gp=gpar(fill = bandcol[centromere+1],col=bandbord[centromere+1]))
+        grid.circle(pos.bottom+chrom.width/2, bandpos[centromere,2],  unit(chrom.width*0.3,"npc"), default.units="native", gp = gpar(col=bleachblack, fill="white", lwd=2))
+      }
       if (legend=="chrom") {
         grid.text(chrom, unit(pos.chrom,"native"), unit(0.5, "npc"), gp = gpar(cex = cex.leg))
       } else if (legend=="band") {
